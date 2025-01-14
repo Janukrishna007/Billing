@@ -1,8 +1,22 @@
+/* Enhanced color palette while maintaining current layout */
+:root {
+  --primary: #1a365d;      /* Deep Blue */
+  --secondary: #2b6cb0;    /* Medium Blue */
+  --accent: #3182ce;       /* Bright Blue */
+  --background: #f7fafc;   /* Light Gray Background */
+  --card-bg: #ffffff;      /* White */
+  --success: #48bb78;      /* Green */
+  --danger: #e53e3e;       /* Red */
+  --text-primary: #2d3748; /* Dark Gray */
+  --text-secondary: #4a5568; /* Medium Gray */
+  --border: #e2e8f0;      /* Light Gray Border */
+}
+
 /* Global Styles */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #1e2a38;
-  color: #f8f9fa;
+  background-color: var(--background);
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
 }
@@ -13,33 +27,35 @@ body {
   padding: 20px;
 }
 
-/* Header */
+/* Header with animation */
 .header {
-  background: linear-gradient(to right, #2c3e50, #3498db);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 30px;
   text-align: center;
+  animation: slideDown 0.5s ease-out;
 }
 
 .header h1 {
   margin: 0;
-  color: #f5af19;
+  color: white;
   font-size: 2.5rem;
 }
 
 /* Form Section */
 .form-section {
-  background: white;
+  background: var(--card-bg);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .form-section h2 {
-  color: #f5af19;
+  color: var(--primary);
 }
 
 .item-form {
@@ -51,30 +67,40 @@ body {
 
 input, select {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 4px;
   font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
 }
 
 .btn-add {
-  background: #2ecc71;
+  background: var(--success);
   color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: transform 0.2s ease, background 0.3s ease;
 }
 
 .btn-add:hover {
-  background: #27ae60;
+  transform: translateY(-1px);
+  background: #38a169;
 }
 
 /* Billing Section */
 .billing-section {
-  background-color: #25394a;
+  background: var(--card-bg);
   padding: 20px;
   border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-out;
 }
 
 .billing-section h2 {
@@ -88,44 +114,52 @@ table {
 }
 
 thead {
-  background-color: #14202e;
-  color: #f5af19;
+  background-color: var(--background);
 }
 
-th, td {
-  text-align: center;
-  padding: 10px;
-  border: 1px solid #ccc;
+th {
+  padding: 12px;
+  text-align: left;
+  color: var(--primary);
+  border-bottom: 2px solid var(--border);
 }
 
-tr:nth-child(even) {
-  background-color: #2b3c4d;
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+tr {
+  transition: background-color 0.2s ease;
 }
 
 tr:hover {
-  background-color: #394a5a;
+  background-color: var(--background);
 }
 
 .btn-remove {
-  background-color: #ff4d4d;
-  color: #fff;
+  background-color: var(--danger);
+  color: white;
   border: none;
   padding: 5px 10px;
-  font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
 }
 
 .btn-remove:hover {
-  background-color: #e63e3e;
+  transform: translateY(-1px);
+  background: #c53030;
 }
 
 /* Total Amount */
 .total-amount {
   margin-top: 20px;
   text-align: right;
-  color: #f5af19;
+  color: var(--primary);
   font-size: 1.5rem;
+  font-weight: bold;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .billing-header {
@@ -244,7 +278,6 @@ th {
     grid-template-columns: 1fr;
   }
 }
-
 /* Add these new styles */
 .summary-section {
   background: white;
@@ -372,3 +405,211 @@ th:hover {
     display: none;
   }
 }
+
+/* Print Layout Styles */
+.print-only {
+  display: none;
+}
+
+@media print {
+  /* Hide regular content */
+  .container > *:not(.print-only) {
+    display: none !important;
+  }
+
+  /* Show print layout */
+  .print-only {
+    display: block;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .print-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 20px;
+  }
+
+  .company-info h1 {
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+  }
+
+  .company-info p {
+    margin: 5px 0;
+    color: #555;
+  }
+
+  .invoice-details {
+    text-align: right;
+  }
+
+  .invoice-details h2 {
+    color: #2c3e50;
+    font-size: 24px;
+    margin: 0 0 10px 0;
+  }
+
+  .print-customer-info {
+    margin-bottom: 30px;
+  }
+
+  .bill-to h3 {
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+  }
+
+  .bill-to p {
+    margin: 5px 0;
+    color: #555;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+
+  .print-table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #333;
+    padding: 12px;
+    text-align: left;
+  }
+
+  .print-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .print-summary {
+    margin-top: 30px;
+    margin-left: auto;
+    width: 300px;
+  }
+
+  .summary-calculations {
+    border-top: 2px solid #333;
+    padding-top: 20px;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .summary-row.total {
+    font-weight: bold;
+    font-size: 16px;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  .print-footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+
+  .terms-conditions {
+    margin-bottom: 30px;
+  }
+
+  .terms-conditions h4 {
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+  }
+
+  .terms-conditions p {
+    margin: 5px 0;
+    color: #555;
+    font-size: 12px;
+  }
+
+  .signature-section {
+    margin-top: 40px;
+  }
+
+  .signature-line {
+    width: 200px;
+    text-align: center;
+  }
+
+  .signature-line hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin-bottom: 5px;
+  }
+
+  .signature-line p {
+    margin: 0;
+    font-size: 12px;
+    color: #555;
+  }
+
+  /* Page break settings */
+  @page {
+    margin: 0.5cm;
+  }
+
+  /* Ensure proper page breaks */
+  .print-items {
+    page-break-inside: avoid;
+  }
+
+  .print-summary {
+    page-break-inside: avoid;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth transitions for interactive elements */
+.btn-print, .btn-export {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.btn-print:hover, .btn-export:hover {
+  transform: translateY(-1px);
+  background: var(--secondary);
+}
+
+/* Enhanced hover effects for interactive elements */
+input:hover, select:hover {
+  border-color: var(--accent);
+}
+

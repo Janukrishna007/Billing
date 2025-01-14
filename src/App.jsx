@@ -3,6 +3,15 @@ import './App.css';
 import { FaTrash, FaPrint, FaSearch, FaFileExport, FaSave, FaEdit } from 'react-icons/fa';
 
 function App() {
+  const predefinedItems = [
+    { id: "ITM001", name: "Laptop", category: "electronics", price: 75000 },
+    { id: "ITM002", name: "Smartphone", category: "electronics", price: 45000 },
+    { id: "ITM003", name: "T-Shirt", category: "clothing", price: 999 },
+    { id: "ITM004", name: "Jeans", category: "clothing", price: 2499 },
+    { id: "ITM005", name: "Pizza", category: "food", price: 499 },
+    { id: "ITM006", name: "Burger", category: "food", price: 299 },
+  ];
+
   const [items, setItems] = useState(() => {
     const savedItems = localStorage.getItem('billingItems');
     return savedItems ? JSON.parse(savedItems) : [];
@@ -37,6 +46,18 @@ function App() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleItemSelect = (e) => {
+    const selectedItem = predefinedItems.find(item => item.id === e.target.value);
+    if (selectedItem) {
+      setForm({
+        ...form,
+        itemNumber: selectedItem.id,
+        price: selectedItem.price.toString(),
+        category: selectedItem.category
+      });
+    }
+  };
+
   const addItem = () => {
     const { itemNumber, quantity, price, category, date } = form;
 
@@ -66,9 +87,10 @@ function App() {
   };
 
   const removeItem = (index) => {
-    const itemToRemove = items[index];
-    setTotalAmount(totalAmount - itemToRemove.total);
-    setItems(items.filter((_, i) => i !== index));
+    const newItems = items.filter((_, i) => i !== index);
+    const newTotal = newItems.reduce((sum, item) => sum + item.total, 0);
+    setItems(newItems);
+    setTotalAmount(newTotal);
   };
 
   const handlePrint = () => {
@@ -103,7 +125,7 @@ function App() {
   };
 
   const exportToCSV = () => {
-    const headers = ['Date', 'Item Number', 'Category', 'Quantity', 'Price', 'Total'];
+    const headers = ['Date', 'Item Number', 'Category', 'Quantity', 'Price (₹)', 'Total (₹)'];
     const csvData = [
       headers,
       ...items.map(item => [
@@ -111,8 +133,8 @@ function App() {
         item.itemNumber,
         item.category,
         item.quantity,
-        item.price,
-        item.total
+        item.price.toFixed(2),
+        item.total.toFixed(2)
       ])
     ];
     
@@ -125,6 +147,143 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const PrintLayout = () => {
+    const calculateCategoryTotals = () => {
+      return items.reduce((acc, item) => {
+        if (!acc[item.category]) {
+          acc[item.category] = {
+            subtotal: 0,
+            gst: 0
+          };
+        }
+        acc[item.category].subtotal += item.total;
+        
+        switch(item.category) {
+          case 'electronics':
+            acc[item.category].gst = acc[item.category].subtotal * 0.18;
+            break;
+          case 'clothing':
+            acc[item.category].gst = acc[item.category].subtotal * 0.05;
+            break;
+          case 'food':
+            acc[item.category].gst = acc[item.category].subtotal * 0.12;
+            break;
+          default:
+            acc[item.category].gst = acc[item.category].subtotal * 0.18;
+        }
+        return acc;
+      }, {});
+    };
+
+    const categoryTotals = calculateCategoryTotals();
+    const totalGST = Object.values(categoryTotals).reduce((sum, cat) => sum + cat.gst, 0);
+    const finalTotal = totalAmount + totalGST;
+
+    return (
+      <div className="print-only">
+        <div className="print-header">
+          <div className="company-info">
+            <h1>MJ Labs</h1>
+            <p>Technopark phase 1</p>
+            <p>Trivandrum</p>
+            <p>Phone: 8590276004</p>
+            <p>Email: mjlabstvm@gmail.com</p>
+          </div>
+          <div className="invoice-details">
+            <h2>INVOICE</h2>
+            <p>Invoice #: INV-{new Date().getTime().toString().slice(-6)}</p>
+            <p>Date: {formatDate(new Date())}</p>
+          </div>
+        </div>
+
+        <div className="print-customer-info">
+          <div className="bill-to">
+            <h3>Bill To:</h3>
+            <p>{customerInfo.name || 'Janukrishna A S'}</p>
+            <p>{customerInfo.address || 'MJ labs'}</p>
+            <p>Phone: {customerInfo.phone || '8590276004'}</p>
+            <p>Email: {customerInfo.email || 'janukrishnaas@gmail.com'}</p>
+          </div>
+        </div>
+
+        <div className="print-items">
+          <table className="print-table">
+            <thead>
+              <tr>
+                <th>Item Number</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.itemNumber}</td>
+                  <td>{item.category}</td>
+                  <td>{item.quantity}</td>
+                  <td>₹{item.price.toFixed(2)}</td>
+                  <td>₹{item.total.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="print-summary">
+          <div className="summary-calculations">
+            <div className="summary-row">
+              <span>Subtotal:</span>
+              <span>₹{totalAmount.toFixed(2)}</span>
+            </div>
+            
+            {Object.entries(categoryTotals).map(([category, values]) => (
+              <div className="summary-row" key={category}>
+                <span>GST for {category} ({
+                  category === 'electronics' ? '18%' :
+                  category === 'clothing' ? '5%' :
+                  category === 'food' ? '12%' : '18%'
+                }):</span>
+                <span>₹{values.gst.toFixed(2)}</span>
+              </div>
+            ))}
+            
+            <div className="summary-row total">
+              <span>Total (Including GST):</span>
+              <span>₹{finalTotal.toFixed(2)}</span>
+            </div>
+          </div>
+
+          
+        </div>
+
+        <div className="print-footer">
+          <div className="terms-conditions">
+            <h4>Terms & Conditions</h4>
+            <p>1. Payment is due within 30 days</p>
+            <p>2. Please include invoice number on your payment</p>
+            <p>3. Thank you for your business!</p>
+          </div>
+          <div className="signature-section">
+            <div className="signature-line">
+              <hr />
+              <p>Authorized Signature</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -176,7 +335,7 @@ function App() {
             </div>
             <div className="stat-card">
               <h4>Total Amount</h4>
-              <p>${totalAmount.toFixed(2)}</p>
+              <p>₹{totalAmount.toFixed(2)}</p>
             </div>
             <div className="stat-card">
               <h4>Categories</h4>
@@ -196,13 +355,19 @@ function App() {
             }}
             className="item-form"
           >
-            <input
-              type="text"
-              placeholder="Item Number"
+            <select
               name="itemNumber"
               value={form.itemNumber}
-              onChange={handleInputChange}
-            />
+              onChange={handleItemSelect}
+              required
+            >
+              <option value="">Select Item</option>
+              {predefinedItems.map(item => (
+                <option key={item.id} value={item.id}>
+                  {item.id} - {item.name} (₹{item.price})
+                </option>
+              ))}
+            </select>
             <input
               type="number"
               placeholder="Quantity"
@@ -307,8 +472,8 @@ function App() {
                     <td>{item.itemNumber}</td>
                     <td>{item.category}</td>
                     <td>{item.quantity}</td>
-                    <td>${item.price.toFixed(2)}</td>
-                    <td>${item.total.toFixed(2)}</td>
+                    <td>₹{item.price.toFixed(2)}</td>
+                    <td>₹{item.total.toFixed(2)}</td>
                     <td>
                       <button
                         className="btn-remove"
@@ -322,9 +487,11 @@ function App() {
               </tbody>
             </table>
           </div>
-          <h3 className="total-amount">Total: ${totalAmount.toFixed(2)}</h3>
+          <h3 className="total-amount">Total: ₹{totalAmount.toFixed(2)}</h3>
         </section>
       </main>
+
+      <PrintLayout />
     </div>
   );
 }
