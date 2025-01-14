@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 import { FaTrash, FaPrint, FaSearch, FaFileExport, FaSave, FaEdit } from 'react-icons/fa';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
+import EnvironmentalImpact from './components/EnvironmentalImpact';
 
 function App() {
   const predefinedItems = [
-    { id: "ITM001", name: "Laptop", category: "electronics", price: 75000 },
-    { id: "ITM002", name: "Smartphone", category: "electronics", price: 45000 },
-    { id: "ITM003", name: "T-Shirt", category: "clothing", price: 999 },
-    { id: "ITM004", name: "Jeans", category: "clothing", price: 2499 },
-    { id: "ITM005", name: "Pizza", category: "food", price: 499 },
-    { id: "ITM006", name: "Burger", category: "food", price: 299 },
+    { id: "ITM001", name: "Laptop", category: "Electronics", price: 75000 },
+    { id: "ITM002", name: "Smartphone", category: "Electronics", price: 45000 },
+    { id: "ITM003", name: "T-Shirt", category: "Clothing", price: 999 },
+    { id: "ITM004", name: "Jeans", category: "Clothing", price: 2499 },
+    { id: "ITM005", name: "Pizza", category: "Food", price: 499 },
+    { id: "ITM006", name: "Burger", category: "Food", price: 299 },
   ];
 
   const [items, setItems] = useState(() => {
@@ -29,6 +31,8 @@ function App() {
     phone: '',
     address: ''
   });
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showEnvironmental, setShowEnvironmental] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('billingItems', JSON.stringify(items));
@@ -125,25 +129,97 @@ function App() {
   };
 
   const exportToCSV = () => {
-    const headers = ['Date', 'Item Number', 'Category', 'Quantity', 'Price (₹)', 'Total (₹)'];
-    const csvData = [
-      headers,
-      ...items.map(item => [
+    // Generate invoice number
+    const invoiceNumber = `INV-${new Date().getTime().toString().slice(-6)}`;
+    
+    // Prepare headers and customer info section
+    const headers = [
+      ['INVOICE DETAILS'],
+      ['Invoice Number:', invoiceNumber],
+      ['Date:', new Date().toLocaleDateString()],
+      [],
+      ['CUSTOMER INFORMATION'],
+      ['Name:', customerInfo.name || ''],
+      ['Email:', customerInfo.email || ''],
+      ['Phone:', customerInfo.phone || ''],
+      ['Address:', customerInfo.address || ''],
+      [],
+      ['ITEM DETAILS'],
+      ['Date', 'Item Number', 'Item Name', 'Category', 'Quantity', 'Price (₹)', 'Total (₹)', 'GST']
+    ];
+
+    // Prepare items data with GST calculations
+    const itemsData = items.map(item => {
+      let gstRate;
+      switch(item.category.toLowerCase()) {
+        case 'electronics':
+          gstRate = 0.18;
+          break;
+        case 'clothing':
+          gstRate = 0.05;
+          break;
+        case 'food':
+          gstRate = 0.12;
+          break;
+        default:
+          gstRate = 0.18;
+      }
+      
+      const gstAmount = item.total * gstRate;
+      const itemName = predefinedItems.find(pItem => pItem.id === item.itemNumber)?.name || item.itemNumber;
+
+      return [
         item.date,
         item.itemNumber,
+        itemName,
         item.category,
         item.quantity,
         item.price.toFixed(2),
-        item.total.toFixed(2)
-      ])
+        item.total.toFixed(2),
+        `${(gstRate * 100)}% (₹${gstAmount.toFixed(2)})`
+      ];
+    });
+
+    // Calculate totals
+    const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+    const totalGST = items.reduce((sum, item) => {
+      let gstRate;
+      switch(item.category.toLowerCase()) {
+        case 'electronics': gstRate = 0.18; break;
+        case 'clothing': gstRate = 0.05; break;
+        case 'food': gstRate = 0.12; break;
+        default: gstRate = 0.18;
+      }
+      return sum + (item.total * gstRate);
+    }, 0);
+    const grandTotal = subtotal + totalGST;
+
+    // Add summary section
+    const summary = [
+      [],
+      ['SUMMARY'],
+      ['Subtotal:', `₹${subtotal.toFixed(2)}`],
+      ['Total GST:', `₹${totalGST.toFixed(2)}`],
+      ['Grand Total:', `₹${grandTotal.toFixed(2)}`],
+      [],
+      ['Generated on:', new Date().toLocaleString()],
+      ['MJ Labs, Technopark phase 1, Trivandrum']
     ];
-    
+
+    // Combine all data
+    const csvData = [
+      ...headers,
+      ...itemsData,
+      ...summary
+    ];
+      
+    // Create and download CSV file
     const csvContent = "data:text/csv;charset=utf-8," + 
       csvData.map(row => row.join(',')).join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `billing_report_${new Date().toISOString()}.csv`);
+    link.setAttribute("download", `billing_report_${invoiceNumber}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -209,10 +285,10 @@ function App() {
         <div className="print-customer-info">
           <div className="bill-to">
             <h3>Bill To:</h3>
-            <p>{customerInfo.name || 'Janukrishna A S'}</p>
-            <p>{customerInfo.address || 'MJ labs'}</p>
-            <p>Phone: {customerInfo.phone || '8590276004'}</p>
-            <p>Email: {customerInfo.email || 'janukrishnaas@gmail.com'}</p>
+            <p>{customerInfo.name}</p>
+            <p>{customerInfo.address}</p>
+            {customerInfo.phone && <p>Phone: {customerInfo.phone}</p>}
+            {customerInfo.email && <p>Email: {customerInfo.email}</p>}
           </div>
         </div>
 
@@ -290,12 +366,24 @@ function App() {
     <div className="container">
       <header className="header">
         <h1>Billing System</h1>
-        <div className="customer-info">
+        <div className="header-buttons">
           <button 
             className="btn-toggle-customer"
             onClick={() => setShowSummary(!showSummary)}
           >
             {showSummary ? 'Hide Summary' : 'Show Summary'}
+          </button>
+          <button 
+            className="btn-toggle-analytics"
+            onClick={() => setShowAnalytics(!showAnalytics)}
+          >
+            {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
+          </button>
+          <button 
+            className="btn-toggle-environmental"
+            onClick={() => setShowEnvironmental(!showEnvironmental)}
+          >
+            {showEnvironmental ? 'Hide Environmental Impact' : 'Show Environmental Impact'}
           </button>
         </div>
       </header>
@@ -345,6 +433,18 @@ function App() {
         </section>
       )}
 
+      {showAnalytics && (
+        <section className="analytics-container">
+          <AnalyticsDashboard items={items} />
+        </section>
+      )}
+
+      {showEnvironmental && (
+        <section className="environmental-section">
+          <EnvironmentalImpact items={items} />
+        </section>
+      )}
+
       <main>
         <section className="form-section">
           <h2>Add Item</h2>
@@ -389,10 +489,10 @@ function App() {
               required
             >
               <option value="">Select Category</option>
-              <option value="electronics">Electronics</option>
-              <option value="clothing">Clothing</option>
-              <option value="food">Food</option>
-              <option value="other">Other</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Food">Food</option>
+              <option value="Other">Other</option>
             </select>
             <input
               type="date"
@@ -425,10 +525,10 @@ function App() {
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   <option value="">All Categories</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="clothing">Clothing</option>
-                  <option value="food">Food</option>
-                  <option value="other">Other</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Food">Food</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
               <div className="action-buttons">
