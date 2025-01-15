@@ -1,8 +1,58 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { FaTrash, FaPrint, FaSearch, FaFileExport, FaSave, FaEdit } from 'react-icons/fa';
+import { FaTrash, FaPrint, FaSearch, FaFileExport, FaSave, FaEdit, FaCamera } from 'react-icons/fa';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
+
 import EnvironmentalImpact from './components/EnvironmentalImpact';
+import TranslationSelector from './components/TranslationSelector';
+import ARScanner from './components/ARScanner';
+import Scanner from './components/Scanner';
+
+// Example customer data structure
+const customers = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    points: 0,
+    transactions: [
+      { date: '2023-10-01', amount: 100, product: 'Electronics', paidOnTime: true },
+      { date: '2023-10-05', amount: 50, product: 'Clothing', paidOnTime: true },
+      // More transactions...
+    ],
+  },
+  // More customers...
+];
+
+// Function to calculate rewards based on product type
+function calculateRewards(customer) {
+  let points = 0;
+  customer.transactions.forEach(transaction => {
+    if (transaction.paidOnTime) {
+      switch (transaction.product) {
+        case 'Electronics':
+          points += transaction.amount * 0.2; // 20% for electronics
+          break;
+        case 'Clothing':
+          points += transaction.amount * 0.1; // 10% for clothing
+          break;
+        case 'Food':
+          points += transaction.amount * 0.05; // 5% for food
+          break;
+        default:
+          points += transaction.amount * 0.1; // Default 10%
+      }
+    }
+  });
+  return points;
+}
+
+// Function to update customer rewards
+function updateCustomerRewards() {
+  customers.forEach(customer => {
+    customer.points = calculateRewards(customer);
+  });
+}
 
 function App() {
   const predefinedItems = [
@@ -33,6 +83,151 @@ function App() {
   });
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showEnvironmental, setShowEnvironmental] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [showScanner, setShowScanner] = useState(false);
+
+  const translations = {
+    en: {
+      title: 'Billing System',
+      summary: 'Show Summary',
+      hideSummary: 'Hide Summary',
+      analytics: 'Show Analytics',
+      hideAnalytics: 'Hide Analytics',
+      environmental: 'Show Environmental Impact',
+      hideEnvironmental: 'Hide Environmental Impact',
+      addItem: 'Add Item',
+      quantity: 'Quantity',
+      price: 'Price',
+      category: 'Category',
+      date: 'Date',
+      total: 'Total',
+      billTo: 'Bill To',
+      invoiceNumber: 'Invoice Number',
+      customerInfo: 'Customer Information',
+      selectItem: 'Select Item',
+      searchItems: 'Search items...',
+      allCategories: 'All Categories',
+      electronics: 'Electronics',
+      clothing: 'Clothing',
+      food: 'Food',
+      other: 'Other',
+      exportCSV: 'Export CSV',
+      printInvoice: 'Print Invoice',
+      actions: 'Actions',
+      totalAmount: 'Total Amount',
+      name: 'Name',
+      email: 'Email',
+      phone: 'Phone',
+      address: 'Address',
+      itemNumber: 'Item Number'
+    },
+    es: {
+      title: 'Sistema de Facturación',
+      summary: 'Mostrar Resumen',
+      hideSummary: 'Ocultar Resumen',
+      analytics: 'Mostrar Análisis',
+      hideAnalytics: 'Ocultar Análisis',
+      environmental: 'Mostrar Impacto Ambiental',
+      hideEnvironmental: 'Ocultar Impacto Ambiental',
+      addItem: 'Agregar Artículo',
+      quantity: 'Cantidad',
+      price: 'Precio',
+      category: 'Categoría',
+      date: 'Fecha',
+      total: 'Total',
+      billTo: 'Facturar a',
+      invoiceNumber: 'Número de Factura',
+      customerInfo: 'Información del Cliente',
+      selectItem: 'Seleccionar Artículo',
+      searchItems: 'Buscar artículos...',
+      allCategories: 'Todas las Categorías',
+      electronics: 'Electrónicos',
+      clothing: 'Ropa',
+      food: 'Alimentos',
+      other: 'Otros',
+      exportCSV: 'Exportar CSV',
+      printInvoice: 'Imprimir Factura',
+      actions: 'Acciones',
+      totalAmount: 'Monto Total',
+      name: 'Nombre',
+      email: 'Correo',
+      phone: 'Teléfono',
+      address: 'Dirección',
+      itemNumber: 'Número de Artículo'
+    },
+    hi: {
+      title: 'बिलिंग सिस्टम',
+      summary: 'सारांश दिखाएं',
+      hideSummary: 'सारांश छिपाएं',
+      analytics: 'विश्लेषण दिखाएं',
+      hideAnalytics: 'विश्लेषण छिपाएं',
+      environmental: 'पर्यावरण प्रभाव दिखाएं',
+      hideEnvironmental: 'पर्यावरण प्रभाव छिपाएं',
+      addItem: 'आइटम जोड़ें',
+      quantity: 'मात्रा',
+      price: 'कीमत',
+      category: 'श्रेणी',
+      date: 'दिनांक',
+      total: 'कुल',
+      billTo: 'बिल प्राप्तकर्ता',
+      invoiceNumber: 'चालान संख्या',
+      customerInfo: 'ग्राहक जानकारी',
+      selectItem: 'आइटम चुनें',
+      searchItems: 'आइटम खोजें...',
+      allCategories: 'सभी श्रेणियां',
+      electronics: 'इलेक्ट्रॉनिक्स',
+      clothing: 'कपड़े',
+      food: 'खाना',
+      other: 'अन्य',
+      exportCSV: 'CSV निर्यात करें',
+      printInvoice: 'चालान प्रिंट करें',
+      actions: 'कार्रवाई',
+      totalAmount: 'कुल राशि',
+      name: 'नाम',
+      email: 'ईमेल',
+      phone: 'फ़ोन',
+      address: 'पता',
+      itemNumber: 'वस्तु संख्या'
+    },
+    ml: {
+      title: 'ബില്ലിംഗ് സിസ്റ്റം',
+      summary: 'സംഗ്രഹം കാണിക്കുക',
+      hideSummary: 'സംഗ്രഹം മറയ്ക്കുക',
+      analytics: 'വിശകലനം കാണിക്കുക',
+      hideAnalytics: 'വിശകലനം മറയ്ക്കുക',
+      environmental: 'പരിസ്ഥിതി സ്വാധീനം കാണിക്കുക',
+      hideEnvironmental: 'പരിസ്ഥിതി സ്വാധീനം മറയ്ക്കുക',
+      addItem: 'ഇനം ചേർക്കുക',
+      quantity: 'അളവ്',
+      price: 'വില',
+      category: 'വിഭാഗം',
+      date: 'തീയതി',
+      total: 'ആകെ',
+      billTo: 'ബില്ല് സ്വീകർത്താവ്',
+      invoiceNumber: 'ഇൻവോയ്സ് നമ്പർ',
+      customerInfo: 'ഉപഭോക്താവിന്റെ വിവരങ്ങൾ',
+      selectItem: 'ഇനം തിരഞ്ഞെടുക്കുക',
+      searchItems: 'ഇനങ്ങൾ തിരയുക...',
+      allCategories: 'എല്ലാ വിഭാഗങ്ങളും',
+      electronics: 'ഇലക്ട്രോണിക്സ്',
+      clothing: 'വസ്ത്രങ്ങൾ',
+      food: 'ഭക്ഷണം',
+      other: 'മറ്റുള്ളവ',
+      exportCSV: 'CSV കയറ്റുമതി ചെയ്യുക',
+      printInvoice: 'ഇൻവോയ്സ് പ്രിന്റ് ചെയ്യുക',
+      actions: 'പ്രവർത്തനങ്ങൾ',
+      totalAmount: 'ആകെ തുക',
+      name: 'പേര്',
+      email: 'ഇമെയിൽ',
+      phone: 'ഫോൺ',
+      address: 'വിലാസം',
+      itemNumber: 'ഇനം നമ്പർ'
+    }
+  };
+
+  const t = (key) => {
+    return translations[currentLanguage]?.[key] || translations.en[key];
+  };
 
   useEffect(() => {
     localStorage.setItem('billingItems', JSON.stringify(items));
@@ -362,29 +557,53 @@ function App() {
     );
   };
 
+  const handleScanComplete = (scannedData) => {
+    // Here you can process the scanned barcode/QR code data
+    console.log('Scanned data:', scannedData);
+    
+    // Example: Add item based on scanned code
+    const newItem = {
+      itemNumber: scannedData,
+      date: new Date().toISOString().split('T')[0],
+      quantity: 1,
+      price: 0, // You would need to look up the price based on the code
+      total: 0
+    };
+    
+    // Add the item to your items list
+    setItems(prevItems => [...prevItems, newItem]);
+    setShowScanner(false);
+  };
+
   return (
     <div className="container">
       <header className="header">
-        <h1>Billing System</h1>
-        <div className="header-buttons">
-          <button 
-            className="btn-toggle-customer"
-            onClick={() => setShowSummary(!showSummary)}
-          >
-            {showSummary ? 'Hide Summary' : 'Show Summary'}
-          </button>
-          <button 
-            className="btn-toggle-analytics"
-            onClick={() => setShowAnalytics(!showAnalytics)}
-          >
-            {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
-          </button>
-          <button 
-            className="btn-toggle-environmental"
-            onClick={() => setShowEnvironmental(!showEnvironmental)}
-          >
-            {showEnvironmental ? 'Hide Environmental Impact' : 'Show Environmental Impact'}
-          </button>
+        <h1>{t('title')}</h1>
+        <div className="header-controls">
+          <TranslationSelector 
+            currentLanguage={currentLanguage}
+            onLanguageChange={setCurrentLanguage}
+          />
+          <div className="header-buttons">
+            <button 
+              className="btn-toggle-customer"
+              onClick={() => setShowSummary(!showSummary)}
+            >
+              {showSummary ? t('hideSummary') : t('summary')}
+            </button>
+            <button 
+              className="btn-toggle-analytics"
+              onClick={() => setShowAnalytics(!showAnalytics)}
+            >
+              {showAnalytics ? t('hideAnalytics') : t('analytics')}
+            </button>
+            <button 
+              className="btn-toggle-environmental"
+              onClick={() => setShowEnvironmental(!showEnvironmental)}
+            >
+              {showEnvironmental ? t('hideEnvironmental') : t('environmental')}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -394,24 +613,24 @@ function App() {
             <h3>Customer Information</h3>
             <input
               type="text"
-              placeholder="Customer Name"
+              placeholder={t('name')}
               value={customerInfo.name}
               onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder={t('email')}
               value={customerInfo.email}
               onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
             />
             <input
               type="tel"
-              placeholder="Phone"
+              placeholder={t('phone')}
               value={customerInfo.phone}
               onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
             />
             <textarea
-              placeholder="Address"
+              placeholder={t('address')}
               value={customerInfo.address}
               onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
             />
@@ -435,13 +654,13 @@ function App() {
 
       {showAnalytics && (
         <section className="analytics-container">
-          <AnalyticsDashboard items={items} />
+          <AnalyticsDashboard items={items} t={t} />
         </section>
       )}
 
       {showEnvironmental && (
         <section className="environmental-section">
-          <EnvironmentalImpact items={items} />
+          <EnvironmentalImpact items={items} t={t} />
         </section>
       )}
 
@@ -488,11 +707,11 @@ function App() {
               onChange={handleInputChange}
               required
             >
-              <option value="">Select Category</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Clothing">Clothing</option>
-              <option value="Food">Food</option>
-              <option value="Other">Other</option>
+              <option value="">{t('selectItem')}</option>
+              <option value="Electronics">{t('electronics')}</option>
+              <option value="Clothing">{t('clothing')}</option>
+              <option value="Food">{t('food')}</option>
+              <option value="Other">{t('other')}</option>
             </select>
             <input
               type="date"
@@ -515,7 +734,7 @@ function App() {
                   <FaSearch className="search-icon" />
                   <input
                     type="text"
-                    placeholder="Search items..."
+                    placeholder={t('searchItems')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -532,11 +751,17 @@ function App() {
                 </select>
               </div>
               <div className="action-buttons">
+                <button 
+                  className="btn-scan"
+                  onClick={() => setShowScanner(true)}
+                >
+                  <FaCamera /> Scan Receipt
+                </button>
                 <button className="btn-export" onClick={exportToCSV}>
-                  <FaFileExport /> Export CSV
+                  <FaFileExport /> {t('exportCSV')}
                 </button>
                 <button className="btn-print" onClick={handlePrint}>
-                  <FaPrint /> Print Invoice
+                  <FaPrint /> {t('printInvoice')}
                 </button>
               </div>
             </div>
@@ -546,30 +771,22 @@ function App() {
             <table>
               <thead>
                 <tr>
-                  <th>#</th>
-                  {['date', 'itemNumber', 'category', 'quantity', 'price', 'total'].map((key) => (
-                    <th 
-                      key={key}
-                      onClick={() => handleSort(key)}
-                      className={sortConfig.key === key ? `sorted-${sortConfig.direction}` : ''}
-                    >
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                      {sortConfig.key === key && (
-                        <span className="sort-indicator">
-                          {sortConfig.direction === 'ascending' ? ' ↑' : ' ↓'}
-                        </span>
-                      )}
-                    </th>
-                  ))}
-                  <th>Actions</th>
+                  <th onClick={() => handleSort('date')}>{t('date')}</th>
+                  <th onClick={() => handleSort('itemNumber')}>{t('itemNumber')}</th>
+                  <th onClick={() => handleSort('itemName')}>{t('selectItem')}</th>
+                  <th onClick={() => handleSort('category')}>{t('category')}</th>
+                  <th onClick={() => handleSort('quantity')}>{t('quantity')}</th>
+                  <th onClick={() => handleSort('price')}>{t('price')}</th>
+                  <th onClick={() => handleSort('total')}>{t('total')}</th>
+                  <th>{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredItems.map((item, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
                     <td>{item.date}</td>
                     <td>{item.itemNumber}</td>
+                    <td>{predefinedItems.find(pItem => pItem.id === item.itemNumber)?.name || item.itemNumber}</td>
                     <td>{item.category}</td>
                     <td>{item.quantity}</td>
                     <td>₹{item.price.toFixed(2)}</td>
@@ -592,6 +809,13 @@ function App() {
       </main>
 
       <PrintLayout />
+
+      {showScanner && (
+        <Scanner 
+          onClose={() => setShowScanner(false)}
+          onScan={handleScanComplete}
+        />
+      )}
     </div>
   );
 }

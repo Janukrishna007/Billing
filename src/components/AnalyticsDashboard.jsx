@@ -129,14 +129,11 @@ const AnalyticsDashboard = ({ items }) => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Bar dataKey="total" fill="#8884d8">
-                {spendingHeatmap.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={`rgba(136, 132, 216, ${entry.intensity})`}
-                  />
-                ))}
-              </Bar>
+              <Bar 
+                dataKey="total" 
+                fill="#8884d8" 
+                isAnimationActive={false}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

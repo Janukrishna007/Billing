@@ -110,10 +110,33 @@ input:focus, select:focus {
   color: #f5af19;
 }
 
+.table-responsive {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+  min-width: 800px; /* Ensures table doesn't get too cramped */
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+/* Ensure columns have minimum width */
+th:nth-child(2), /* Item Number column */
+td:nth-child(2) {
+  min-width: 120px;
 }
 
 thead {
@@ -285,10 +308,10 @@ th {
 }
 /* Add these new styles */
 .summary-section {
-  background: white;
+  background: rgb(0, 0, 0);
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(255, 253, 253);
   margin-bottom: 30px;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -315,7 +338,7 @@ th {
 }
 
 .stat-card {
-  background: #f8f9fa;
+  background: #eff4fa;
   padding: 15px;
   border-radius: 8px;
   text-align: center;
@@ -1001,5 +1024,152 @@ button.btn-add:hover {
   display: flex;
   gap: 15px;
   align-items: center;
+}
+
+/* Translation selector styles */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.translation-selector {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 4px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.language-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-icon {
+  color: #8e44ad;
+  font-size: 20px;
+}
+
+.language-dropdown {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  color: #2c3e50;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.language-dropdown:hover {
+  border-color: #8e44ad;
+}
+
+.language-dropdown:focus {
+  outline: none;
+  border-color: #8e44ad;
+  box-shadow: 0 0 0 2px rgba(142, 68, 173, 0.2);
+}
+
+.rewards-section {
+  background-color: #f0f8ff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 20px 0;
+}
+
+.rewards-section h2 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.rewards-section p {
+  color: #34495e;
+  font-size: 16px;
+}
+
+.rewards-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.rewards-section li {
+  color: #2c3e50;
+  margin: 5px 0;
+}
+
+.scanner-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.close-scanner {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.btn-scan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-scan:hover {
+  background-color: #45a049;
+}
+
+/* Table header styles */
+.bill-table th {
+  background-color: #1a1a1a;
+  color: #ffffff !important;
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Scanner button styles */
+.btn-scan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.btn-scan:hover {
+  background-color: #45a049;
 }
 
