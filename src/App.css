@@ -36,7 +36,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 15px 20px;
   background: linear-gradient(135deg, #6c5ce7, #a363d9);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -383,11 +383,11 @@ th {
   background: #4834d4;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -820,19 +820,19 @@ button.btn-add:hover {
 
 .header-buttons {
   display: flex;
-  gap: 15px;
-  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .btn-toggle-analytics {
   background: #8e44ad;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -847,11 +847,11 @@ button.btn-add:hover {
   background: #4834d4;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -900,11 +900,11 @@ button.btn-add:hover {
   background: #8e44ad;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -1002,11 +1002,11 @@ button.btn-add:hover {
   background: #8e44ad;  /* Same purple color as other buttons */
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -1022,8 +1022,8 @@ button.btn-add:hover {
 /* Update header buttons container */
 .header-buttons {
   display: flex;
-  gap: 15px;
-  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* Translation selector styles */
@@ -1171,5 +1171,221 @@ button.btn-add:hover {
 
 .btn-scan:hover {
   background-color: #45a049;
+}
+
+/* Update the button styles to match */
+.btn-toggle-predictions {
+  background: #8e44ad;  /* Same purple color as other buttons */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-toggle-predictions:hover {
+  background: #9b59b6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Update the button styles to match */
+.btn-toggle-iot {
+  background: #8e44ad;  /* Same purple color as other buttons */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-toggle-iot:hover {
+  background: #9b59b6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-left h1 {
+  margin: 0;
+}
+
+.translation-selector {
+  margin-left: 20px;
+}
+
+/* Update header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #6c5ce7, #a363d9);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.translation-bar {
+  background: var(--background);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid var(--border);
+}
+
+.translation-bar .translation-selector {
+  margin: 0;
+}
+
+.gst-summary {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gst-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.gst-card {
+  background: var(--background);
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.gst-card h4 {
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+}
+
+.gst-card p {
+  color: var(--primary);
+  font-size: 1.2em;
+  font-weight: 500;
+  margin: 0;
+}
+
+.gst-preview {
+  background: var(--background);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+  border: 1px solid var(--border);
+}
+
+.gst-preview p {
+  margin: 5px 0;
+  color: var(--text-secondary);
+}
+
+.gst-preview p:last-child {
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 1.1em;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.item-form select option {
+  padding: 8px;
+}
+
+.item-form select option:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+@media print {
+  .translation-bar {
+    display: none;
+  }
+  
+  .header-buttons {
+    display: none;
+  }
+
+  .billing-actions {
+    display: none;
+  }
+
+  .btn-remove {
+    display: none;
+  }
+
+  /* Add any other elements you want to hide during printing */
+  .form-section,
+  .search-filter,
+  .action-buttons {
+    display: none;
+  }
+
+  /* Ensure the bill content is clearly visible */
+  .container {
+    padding: 20px;
+  }
+
+  .table-responsive {
+    overflow: visible;
+  }
+
+  /* Style the invoice header for printing */
+  .print-header {
+    text-align: left;
+    margin-bottom: 30px;
+  }
+
+  .print-header h1 {
+    color: #000;
+    margin-bottom: 10px;
+  }
+
+  /* Ensure table fits on printed page */
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+}
+
+.btn-toggle-inventory {
+  background: #8e44ad;  /* Same purple color as other buttons */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-toggle-inventory:hover {
+  background: #9b59b6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 

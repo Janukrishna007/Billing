@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './App.css';
 import { FaTrash, FaPrint, FaSearch, FaFileExport, FaSave, FaEdit, FaCamera } from 'react-icons/fa';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
@@ -7,6 +7,9 @@ import EnvironmentalImpact from './components/EnvironmentalImpact';
 import TranslationSelector from './components/TranslationSelector';
 import ARScanner from './components/ARScanner';
 import Scanner from './components/Scanner';
+import PredictiveBilling from './components/PredictiveBilling';
+import IoTBilling from './components/IoTBilling';
+import InventoryManagement from './components/InventoryManagement';
 
 // Example customer data structure
 const customers = [
@@ -56,13 +59,45 @@ function updateCustomerRewards() {
 
 function App() {
   const predefinedItems = [
-    { id: "ITM001", name: "Laptop", category: "Electronics", price: 75000 },
-    { id: "ITM002", name: "Smartphone", category: "Electronics", price: 45000 },
-    { id: "ITM003", name: "T-Shirt", category: "Clothing", price: 999 },
-    { id: "ITM004", name: "Jeans", category: "Clothing", price: 2499 },
-    { id: "ITM005", name: "Pizza", category: "Food", price: 499 },
-    { id: "ITM006", name: "Burger", category: "Food", price: 299 },
+    { id: "ITM001", name: "Laptop", category: "Electronics", price: 75000, gstRate: 18 },
+    { id: "ITM002", name: "Smartphone", category: "Electronics", price: 45000, gstRate: 18 },
+    { id: "ITM003", name: "T-Shirt", category: "Clothing", price: 999, gstRate: 5 },
+    { id: "ITM004", name: "Jeans", category: "Clothing", price: 2499, gstRate: 5 },
+    { id: "ITM005", name: "Pizza", category: "Food", price: 5, gstRate: 5 },
+    { id: "ITM006", name: "Burger", category: "Food", price: 299, gstRate: 5 },
+    { id: "ITM007", name: "Printer", category: "Electronics", price: 15000, gstRate: 18 },
+    { id: "ITM008", name: "Watch", category: "Accessories", price: 5000, gstRate: 12 },
+    { id: "ITM009", name: "Perfume", category: "Cosmetics", price: 1999, gstRate: 18 },
+    { id: "ITM010", name: "Medicine", category: "Healthcare", price: 500, gstRate: 5 },
+    { id: "ITM011", name: "Books", category: "Education", price: 799, gstRate: 0 },
+    { id: "ITM012", name: "Furniture", category: "Home", price: 25000, gstRate: 18 },
+    { id: "ITM013", name: "Toys", category: "Kids", price: 999, gstRate: 12 },
+    { id: "ITM014", name: "Sports Equipment", category: "Sports", price: 2999, gstRate: 12 },
   ];
+
+  // Add categories array
+  const categories = [
+    "Electronics",
+    "Clothing",
+    "Food",
+    "Accessories",
+    "Cosmetics",
+    "Healthcare",
+    "Education",
+    "Home",
+    "Kids",
+    "Sports",
+    "Other"
+  ];
+
+  // GST rate mapping
+  const gstRates = {
+    EXEMPT: 0,
+    LOW: 5,
+    MEDIUM: 12,
+    HIGH: 18,
+    LUXURY: 28
+  };
 
   const [items, setItems] = useState(() => {
     const savedItems = localStorage.getItem('billingItems');
@@ -85,10 +120,13 @@ function App() {
   const [showEnvironmental, setShowEnvironmental] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [showScanner, setShowScanner] = useState(false);
+  const [showPredictions, setShowPredictions] = useState(false);
+  const [showIoT, setShowIoT] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
 
   const translations = {
     en: {
-      title: 'Billing System',
+      title: 'Billing',
       summary: 'Show Summary',
       hideSummary: 'Hide Summary',
       analytics: 'Show Analytics',
@@ -119,10 +157,16 @@ function App() {
       email: 'Email',
       phone: 'Phone',
       address: 'Address',
-      itemNumber: 'Item Number'
+      itemNumber: 'Item Number',
+      showPredictions: 'Show Predictions',
+      hidePredictions: 'Hide Predictions',
+      showIoT: 'Show IoT Devices',
+      hideIoT: 'Hide IoT Devices',
+      showInventory: 'Show Inventory',
+      hideInventory: 'Hide Inventory',
     },
     es: {
-      title: 'Sistema de Facturación',
+      title: 'Facturación',
       summary: 'Mostrar Resumen',
       hideSummary: 'Ocultar Resumen',
       analytics: 'Mostrar Análisis',
@@ -153,10 +197,16 @@ function App() {
       email: 'Correo',
       phone: 'Teléfono',
       address: 'Dirección',
-      itemNumber: 'Número de Artículo'
+      itemNumber: 'Número de Artículo',
+      showPredictions: 'Mostrar Predicciones',
+      hidePredictions: 'Ocultar Predicciones',
+      showIoT: 'Mostrar Dispositivos IoT',
+      hideIoT: 'Ocultar Dispositivos IoT',
+      showInventory: 'Mostrar Inventario',
+      hideInventory: 'Ocultar Inventario',
     },
     hi: {
-      title: 'बिलिंग सिस्टम',
+      title: 'बिलिंग',
       summary: 'सारांश दिखाएं',
       hideSummary: 'सारांश छिपाएं',
       analytics: 'विश्लेषण दिखाएं',
@@ -187,10 +237,16 @@ function App() {
       email: 'ईमेल',
       phone: 'फ़ोन',
       address: 'पता',
-      itemNumber: 'वस्तु संख्या'
+      itemNumber: 'वस्तु संख्या',
+      showPredictions: 'भविष्यवाणियां दिखाएं',
+      hidePredictions: 'भविष्यवाणियां छिपाएं',
+      showIoT: 'Show IoT Devices',
+      hideIoT: 'Hide IoT Devices',
+      showInventory: 'Show Inventory',
+      hideInventory: 'Hide Inventory',
     },
     ml: {
-      title: 'ബില്ലിംഗ് സിസ്റ്റം',
+      title: 'ബില്ലിംഗ്',
       summary: 'സംഗ്രഹം കാണിക്കുക',
       hideSummary: 'സംഗ്രഹം മറയ്ക്കുക',
       analytics: 'വിശകലനം കാണിക്കുക',
@@ -221,7 +277,13 @@ function App() {
       email: 'ഇമെയിൽ',
       phone: 'ഫോൺ',
       address: 'വിലാസം',
-      itemNumber: 'ഇനം നമ്പർ'
+      itemNumber: 'ഇനം നമ്പർ',
+      showPredictions: 'പ്രവചനങ്ങൾ കാണിക്കുക',
+      hidePredictions: 'പ്രവചനങ്ങൾ മറയ്ക്കുക',
+      showIoT: 'Show IoT Devices',
+      hideIoT: 'Hide IoT Devices',
+      showInventory: 'Show Inventory',
+      hideInventory: 'Hide Inventory',
     }
   };
 
@@ -252,30 +314,38 @@ function App() {
         ...form,
         itemNumber: selectedItem.id,
         price: selectedItem.price.toString(),
-        category: selectedItem.category
+        category: selectedItem.category,
+        gstRate: selectedItem.gstRate
       });
     }
   };
 
   const addItem = () => {
-    const { itemNumber, quantity, price, category, date } = form;
-
-    if (!itemNumber || !quantity || !price || !category) {
-      alert('Please fill in all fields.');
+    if (!form.itemNumber || !form.quantity || !form.price) {
+      alert('Please fill in all required fields');
       return;
     }
 
+    // Find the selected predefined item to get its GST rate
+    const selectedItem = predefinedItems.find(item => item.id === form.itemNumber);
+    const gstRate = selectedItem ? selectedItem.gstRate : 0;
+
+    // Calculate GST amount and total
+    const baseAmount = parseFloat(form.price) * parseInt(form.quantity);
+    const gstAmount = (baseAmount * gstRate) / 100;
+    const totalAmount = baseAmount + gstAmount;
+
     const newItem = {
-      itemNumber,
-      quantity: parseFloat(quantity),
-      price: parseFloat(price),
-      category,
-      date,
-      total: parseFloat(quantity) * parseFloat(price),
+      ...form,
+      quantity: parseInt(form.quantity),
+      price: parseFloat(form.price),
+      gstRate: gstRate,
+      gstAmount: gstAmount,
+      total: totalAmount,
+      date: form.date || new Date().toISOString().split('T')[0]
     };
 
-    setItems([...items, newItem]);
-    setTotalAmount(totalAmount + newItem.total);
+    setItems(prevItems => [...prevItems, newItem]);
     setForm({
       itemNumber: '',
       quantity: '',
@@ -557,33 +627,66 @@ function App() {
     );
   };
 
-  const handleScanComplete = (scannedData) => {
-    // Here you can process the scanned barcode/QR code data
-    console.log('Scanned data:', scannedData);
-    
-    // Example: Add item based on scanned code
+  const handleScanComplete = (scannedItem) => {
+    // Calculate GST amount and total
+    const baseAmount = scannedItem.price * scannedItem.quantity;
+    const gstAmount = (baseAmount * scannedItem.gstRate) / 100;
+    const totalAmount = baseAmount + gstAmount;
+
     const newItem = {
-      itemNumber: scannedData,
-      date: new Date().toISOString().split('T')[0],
-      quantity: 1,
-      price: 0, // You would need to look up the price based on the code
-      total: 0
+      ...scannedItem,
+      gstAmount: gstAmount,
+      total: totalAmount
     };
-    
-    // Add the item to your items list
+
     setItems(prevItems => [...prevItems, newItem]);
-    setShowScanner(false);
+    setTotalAmount(prevTotal => prevTotal + totalAmount);
+  };
+
+  useEffect(() => {
+    const newTotal = items.reduce((sum, item) => sum + item.total, 0);
+    setTotalAmount(newTotal);
+  }, [items]);
+
+  const GSTSummary = ({ items }) => {
+    const gstSummary = items.reduce((acc, item) => {
+      const rate = item.gstRate;
+      if (!acc[rate]) {
+        acc[rate] = 0;
+      }
+      acc[rate] += (item.price * item.quantity * rate) / 100;
+      return acc;
+    }, {});
+
+    return (
+      <div className="gst-summary">
+        <h3>GST Summary</h3>
+        <div className="gst-cards">
+          {Object.entries(gstSummary).map(([rate, amount]) => (
+            <div key={rate} className="gst-card">
+              <h4>GST @{rate}%</h4>
+              <p>₹{amount.toFixed(2)}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="container">
-      <header className="header">
-        <h1>{t('title')}</h1>
-        <div className="header-controls">
-          <TranslationSelector 
-            currentLanguage={currentLanguage}
-            onLanguageChange={setCurrentLanguage}
-          />
+    <div>
+      <div className="translation-bar">
+        <TranslationSelector 
+          currentLanguage={currentLanguage}
+          onLanguageChange={setCurrentLanguage}
+        />
+      </div>
+
+      <div className="container">
+        <header className="header">
+          <div className="header-left">
+            <h1>{t('title')}</h1>
+          </div>
           <div className="header-buttons">
             <button 
               className="btn-toggle-customer"
@@ -603,219 +706,273 @@ function App() {
             >
               {showEnvironmental ? t('hideEnvironmental') : t('environmental')}
             </button>
-          </div>
-        </div>
-      </header>
-
-      {showSummary && (
-        <section className="summary-section">
-          <div className="customer-form">
-            <h3>Customer Information</h3>
-            <input
-              type="text"
-              placeholder={t('name')}
-              value={customerInfo.name}
-              onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-            />
-            <input
-              type="email"
-              placeholder={t('email')}
-              value={customerInfo.email}
-              onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-            />
-            <input
-              type="tel"
-              placeholder={t('phone')}
-              value={customerInfo.phone}
-              onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-            />
-            <textarea
-              placeholder={t('address')}
-              value={customerInfo.address}
-              onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
-            />
-          </div>
-          <div className="summary-stats">
-            <div className="stat-card">
-              <h4>Total Items</h4>
-              <p>{items.length}</p>
-            </div>
-            <div className="stat-card">
-              <h4>Total Amount</h4>
-              <p>₹{totalAmount.toFixed(2)}</p>
-            </div>
-            <div className="stat-card">
-              <h4>Categories</h4>
-              <p>{new Set(items.map(item => item.category)).size}</p>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {showAnalytics && (
-        <section className="analytics-container">
-          <AnalyticsDashboard items={items} t={t} />
-        </section>
-      )}
-
-      {showEnvironmental && (
-        <section className="environmental-section">
-          <EnvironmentalImpact items={items} t={t} />
-        </section>
-      )}
-
-      <main>
-        <section className="form-section">
-          <h2>Add Item</h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              addItem();
-            }}
-            className="item-form"
-          >
-            <select
-              name="itemNumber"
-              value={form.itemNumber}
-              onChange={handleItemSelect}
-              required
+            <button 
+              className="btn-toggle-predictions"
+              onClick={() => setShowPredictions(!showPredictions)}
             >
-              <option value="">Select Item</option>
-              {predefinedItems.map(item => (
-                <option key={item.id} value={item.id}>
-                  {item.id} - {item.name} (₹{item.price})
-                </option>
-              ))}
-            </select>
-            <input
-              type="number"
-              placeholder="Quantity"
-              name="quantity"
-              value={form.quantity}
-              onChange={handleInputChange}
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              name="price"
-              value={form.price}
-              onChange={handleInputChange}
-            />
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">{t('selectItem')}</option>
-              <option value="Electronics">{t('electronics')}</option>
-              <option value="Clothing">{t('clothing')}</option>
-              <option value="Food">{t('food')}</option>
-              <option value="Other">{t('other')}</option>
-            </select>
-            <input
-              type="date"
-              name="date"
-              value={form.date}
-              onChange={handleInputChange}
-            />
-            <button type="submit" className="btn-add">
-              Add Item
+              {showPredictions ? t('hidePredictions') : t('showPredictions')}
             </button>
-          </form>
-        </section>
+            <button 
+              className="btn-toggle-iot"
+              onClick={() => setShowIoT(!showIoT)}
+            >
+              {showIoT ? t('hideIoT') : t('showIoT')}
+            </button>
+            <button 
+              className="btn-toggle-inventory"
+              onClick={() => setShowInventory(!showInventory)}
+            >
+              {showInventory ? t('hideInventory') : t('showInventory')}
+            </button>
+          </div>
+        </header>
 
-        <section className="billing-section">
-          <div className="billing-header">
-            <h2>Billed Items</h2>
-            <div className="billing-actions">
-              <div className="search-filter">
-                <div className="search-box">
-                  <FaSearch className="search-icon" />
-                  <input
-                    type="text"
-                    placeholder={t('searchItems')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="">All Categories</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Food">Food</option>
-                  <option value="Other">Other</option>
-                </select>
+        {showSummary && (
+          <section className="summary-section">
+            <div className="customer-form">
+              <h3>Customer Information</h3>
+              <input
+                type="text"
+                placeholder={t('name')}
+                value={customerInfo.name}
+                onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+              />
+              <input
+                type="email"
+                placeholder={t('email')}
+                value={customerInfo.email}
+                onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+              />
+              <input
+                type="tel"
+                placeholder={t('phone')}
+                value={customerInfo.phone}
+                onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+              />
+              <textarea
+                placeholder={t('address')}
+                value={customerInfo.address}
+                onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
+              />
+            </div>
+            <div className="summary-stats">
+              <div className="stat-card">
+                <h4>Total Items</h4>
+                <p>{items.length}</p>
               </div>
-              <div className="action-buttons">
-                <button 
-                  className="btn-scan"
-                  onClick={() => setShowScanner(true)}
-                >
-                  <FaCamera /> Scan Receipt
-                </button>
-                <button className="btn-export" onClick={exportToCSV}>
-                  <FaFileExport /> {t('exportCSV')}
-                </button>
-                <button className="btn-print" onClick={handlePrint}>
-                  <FaPrint /> {t('printInvoice')}
-                </button>
+              <div className="stat-card">
+                <h4>Total Amount</h4>
+                <p>₹{totalAmount.toFixed(2)}</p>
+              </div>
+              <div className="stat-card">
+                <h4>Categories</h4>
+                <p>{new Set(items.map(item => item.category)).size}</p>
               </div>
             </div>
-          </div>
+          </section>
+        )}
 
-          <div className="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th onClick={() => handleSort('date')}>{t('date')}</th>
-                  <th onClick={() => handleSort('itemNumber')}>{t('itemNumber')}</th>
-                  <th onClick={() => handleSort('itemName')}>{t('selectItem')}</th>
-                  <th onClick={() => handleSort('category')}>{t('category')}</th>
-                  <th onClick={() => handleSort('quantity')}>{t('quantity')}</th>
-                  <th onClick={() => handleSort('price')}>{t('price')}</th>
-                  <th onClick={() => handleSort('total')}>{t('total')}</th>
-                  <th>{t('actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredItems.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.date}</td>
-                    <td>{item.itemNumber}</td>
-                    <td>{predefinedItems.find(pItem => pItem.id === item.itemNumber)?.name || item.itemNumber}</td>
-                    <td>{item.category}</td>
-                    <td>{item.quantity}</td>
-                    <td>₹{item.price.toFixed(2)}</td>
-                    <td>₹{item.total.toFixed(2)}</td>
-                    <td>
-                      <button
-                        className="btn-remove"
-                        onClick={() => removeItem(index)}
-                      >
-                        <FaTrash />
-                      </button>
-                    </td>
-                  </tr>
+        {showAnalytics && (
+          <section className="analytics-container">
+            <AnalyticsDashboard items={items} t={t} />
+          </section>
+        )}
+
+        {showEnvironmental && (
+          <section className="environmental-section">
+            <EnvironmentalImpact items={items} t={t} />
+          </section>
+        )}
+
+        <main>
+          <section className="form-section">
+            <h2>Add Item</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                addItem();
+              }}
+              className="item-form"
+            >
+              <select
+                name="itemNumber"
+                value={form.itemNumber}
+                onChange={handleItemSelect}
+                required
+              >
+                <option value="">Select Item</option>
+                {predefinedItems.map(item => (
+                  <option key={item.id} value={item.id}>
+                    {item.id} - {item.name} (₹{item.price})
+                  </option>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          <h3 className="total-amount">Total: ₹{totalAmount.toFixed(2)}</h3>
-        </section>
-      </main>
+              </select>
+              <input
+                type="number"
+                placeholder="Quantity"
+                name="quantity"
+                value={form.quantity}
+                onChange={handleInputChange}
+                required
+              />
+              <input
+                type="number"
+                placeholder="Price"
+                name="price"
+                value={form.price}
+                onChange={handleInputChange}
+                required
+              />
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Show Categories</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{t(cat.toLowerCase()) || cat}</option>
+                ))}
+              </select>
+              <input
+                type="date"
+                name="date"
+                value={form.date}
+                onChange={handleInputChange}
+              />
+              <button type="submit" className="btn-add">
+                Add Item
+              </button>
+            </form>
+          </section>
 
-      <PrintLayout />
+          <section className="billing-section">
+            <div className="billing-header">
+              <h2>Billed Items</h2>
+              <div className="billing-actions">
+                <div className="search-filter">
+                  <div className="search-box">
+                    <FaSearch className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder={t('searchItems')}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{t(cat.toLowerCase()) || cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="action-buttons">
+                  <button 
+                    className="btn-scan"
+                    onClick={() => setShowScanner(true)}
+                  >
+                    <FaCamera /> Scan Receipt
+                  </button>
+                  <button className="btn-export" onClick={exportToCSV}>
+                    <FaFileExport /> {t('exportCSV')}
+                  </button>
+                  <button className="btn-print" onClick={handlePrint}>
+                    <FaPrint /> {t('printInvoice')}
+                  </button>
+                </div>
+              </div>
+            </div>
 
-      {showScanner && (
-        <Scanner 
-          onClose={() => setShowScanner(false)}
-          onScan={handleScanComplete}
-        />
-      )}
+            <div className="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th onClick={() => handleSort('date')}>{t('date')}</th>
+                    <th onClick={() => handleSort('itemNumber')}>{t('itemNumber')}</th>
+                    <th onClick={() => handleSort('itemName')}>{t('selectItem')}</th>
+                    <th onClick={() => handleSort('category')}>{t('category')}</th>
+                    <th onClick={() => handleSort('quantity')}>{t('quantity')}</th>
+                    <th onClick={() => handleSort('price')}>{t('price')}</th>
+                    <th>GST Rate</th>
+                    <th>GST Amount</th>
+                    <th onClick={() => handleSort('total')}>{t('total')}</th>
+                    <th>{t('actions')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredItems.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.date}</td>
+                      <td>{item.itemNumber}</td>
+                      <td>{predefinedItems.find(pItem => pItem.id === item.itemNumber)?.name || item.itemNumber}</td>
+                      <td>{item.category}</td>
+                      <td>{item.quantity}</td>
+                      <td>₹{item.price.toFixed(2)}</td>
+                      <td>{item.gstRate}%</td>
+                      <td>₹{((item.price * item.quantity * item.gstRate) / 100).toFixed(2)}</td>
+                      <td>₹{item.total.toFixed(2)}</td>
+                      <td>
+                        <button className="btn-remove" onClick={() => removeItem(index)}>
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <h3 className="total-amount">Total: ₹{totalAmount.toFixed(2)}</h3>
+            <GSTSummary items={items} />
+          </section>
+        </main>
+
+        <PrintLayout />
+
+        {showScanner && (
+          <Scanner 
+            onClose={() => setShowScanner(false)}
+            onScan={handleScanComplete}
+            predefinedItems={predefinedItems}
+          />
+        )}
+
+        {showPredictions && <PredictiveBilling items={items} />}
+
+        {showIoT && (
+          <IoTBilling 
+            onNewTransaction={(transaction) => {
+              if (transaction.type === 'transaction') {
+                // Find a random predefined item for the IoT transaction
+                const randomItem = predefinedItems[Math.floor(Math.random() * predefinedItems.length)];
+                
+                const newItem = {
+                  itemNumber: `IOT-${transaction.deviceId}`,
+                  quantity: transaction.itemCount,
+                  price: transaction.amount / transaction.itemCount,
+                  category: randomItem.category,
+                  gstRate: randomItem.gstRate,
+                  date: new Date().toISOString().split('T')[0],
+                  total: transaction.amount,
+                  gstAmount: (transaction.amount * randomItem.gstRate) / 100
+                };
+                setItems(prev => [...prev, newItem]);
+                setTotalAmount(prevTotal => prevTotal + transaction.amount);
+              }
+            }}
+          />
+        )}
+
+        {showInventory && (
+          <InventoryManagement 
+            items={items}
+            predefinedItems={predefinedItems}
+          />
+        )}
+      </div>
     </div>
   );
 }

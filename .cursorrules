@@ -1,0 +1,73 @@
+General Rules
+System Stability:
+
+Ensure that the application is stable and performs efficiently under various loads.
+All data must be stored securely to prevent data breaches.
+User Authentication:
+
+Customers and administrators must authenticate before accessing sensitive information.
+Use secure password protocols and multi-factor authentication for admin access.
+Data Privacy:
+
+Collect only necessary customer information.
+Encrypt all sensitive data such as billing details and customer profiles.
+Billing and Real-Time Processing
+Item Scanning:
+
+Support both barcode and QR code scanning for item identification.
+Ensure instant response time for scanning and adding items to the bill.
+Billing Calculations:
+
+Automatically calculate item prices, taxes, and discounts in real-time.
+Ensure accuracy in the subtotal, tax, and total amounts displayed.
+Customer Information:
+
+Link billed items to the corresponding customer profile.
+Allow quick retrieval and update of customer data during billing.
+Analytics Dashboard
+Real-Time Insights:
+
+Display real-time sales data, including daily, weekly, and monthly summaries.
+Include visual representations such as graphs and charts for better understanding.
+Performance Metrics:
+
+Show key performance indicators like top-selling products, revenue trends, and customer demographics.
+Custom Reports:
+
+Enable generation of custom reports based on selected timeframes or specific metrics.
+Environmental Impact Tab
+Sustainability Metrics:
+
+Show statistics on paperless billing, energy usage, and carbon footprint reduction.
+Provide actionable tips for improving the environmental impact of the system.
+Recyclable Packaging:
+
+Highlight products using recyclable or eco-friendly packaging.
+Scan Page
+Barcode/QR Code Scanning:
+
+Ensure smooth and error-free scanning using the device camera or an external scanner.
+Handle both 1D and 2D barcodes effectively.
+Fallback Mechanism:
+
+Allow manual entry of product codes in case of scanning failure.
+Scan Accuracy:
+
+Validate scanned data to ensure the correct product is added to the bill.
+Error Handling and Notifications
+Error Messages:
+
+Display user-friendly error messages for system issues like failed scans or database errors.
+Notifications:
+
+Notify users of successful transactions, low inventory levels, or other important system events.
+Security and Maintenance
+Regular Updates:
+
+Perform regular updates to keep the system secure and up-to-date with the latest features.
+Data Backup:
+
+Automatically back up data to prevent loss in case of system failure.
+Access Control:
+
+Implement role-based access to different sections of the system (e.g., admin, cashier, customer).
