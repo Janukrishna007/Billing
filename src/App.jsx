@@ -3,7 +3,7 @@ import './App.css';
 import { FaTrash, FaPrint, FaSearch, FaFileExport, FaSave, FaEdit, FaCamera } from 'react-icons/fa';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 
-import EnvironmentalImpact from '../components/EnvironmentalImpact'
+import EnvironmentalImpact from './components/EnvironmentalImpact'
 import TranslationSelector from './components/TranslationSelector';
 import ARScanner from './components/ARScanner';
 import Scanner from './components/Scanner';
