@@ -1,30 +1,158 @@
-.predictive-billing {
+.analytics-dashboard {
   padding: 2rem;
   background-color: #151521;
   border-radius: 1rem;
   color: #e2e8f0;
 }
 
-.prediction-header {
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 2rem;
 }
 
-.prediction-header h2 {
-  font-size: 1.875rem;
-  font-weight: 600;
+.dashboard-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
   color: #e2e8f0;
   margin-bottom: 0.5rem;
 }
 
-.prediction-subtitle {
+.subtitle {
   color: #94a3b8;
   font-size: 0.875rem;
 }
 
-.prediction-period {
+.dashboard-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.time-filter {
+  display: flex;
+  background-color: #1e1e2d;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+}
+
+.time-filter button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.time-filter button.active {
+  background-color: #3699ff;
+  color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-stat-card {
+  background-color: #1e1e2d;
+  border: 1px solid #2b2b40;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background-color: #2b2b40;
+  border-radius: 0.75rem;
+  color: #3699ff;
+}
+
+.stat-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-title {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.stat-trend {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-trend.positive {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.stat-trend.negative {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.charts-container {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.main-chart {
+  background-color: #1e1e2d;
+  border: 1px solid #2b2b40;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.chart-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.chart-actions {
   display: flex;
   gap: 0.5rem;
   background-color: #1e1e2d;
@@ -32,168 +160,73 @@
   border-radius: 0.5rem;
 }
 
-.prediction-period span {
+.chart-actions button {
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  border: none;
+  background: none;
   color: #94a3b8;
-  cursor: pointer;
+  font-size: 0.875rem;
   border-radius: 0.375rem;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
-.prediction-period span.active {
+.chart-actions button.active {
   background-color: #3699ff;
   color: white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.insights-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.insight-card {
-  background-color: #1e1e2d;
-  border: 1px solid #2b2b40;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  transition: all 0.2s;
-}
-
-.insight-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.insight-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.insight-icon {
-  font-size: 1.5rem;
-  background-color: #2b2b40;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-}
-
-.insight-trend {
-  font-size: 0.875rem;
-  color: #94a3b8;
-}
-
-.insight-trend span {
-  font-weight: 500;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  margin-right: 0.5rem;
-}
-
-.insight-trend span.positive {
-  background-color: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-}
-
-.insight-trend span.negative {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-}
-
-.insight-content h4 {
-  font-size: 0.875rem;
-  color: #94a3b8;
-  margin-bottom: 0.5rem;
-}
-
-.insight-value {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #e2e8f0;
-  margin-bottom: 0.5rem;
-}
-
-.insight-description {
-  font-size: 0.875rem;
-  color: #94a3b8;
-  line-height: 1.25rem;
-}
-
-.prediction-grid {
+.secondary-charts {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
 }
 
-.prediction-card {
+.chart-card {
   background-color: #1e1e2d;
   border: 1px solid #2b2b40;
   border-radius: 1rem;
   padding: 1.5rem;
-  transition: all 0.2s;
 }
 
-.prediction-card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-
-.card-header h3 {
+.chart-card h3 {
   font-size: 1.125rem;
   font-weight: 600;
   color: #e2e8f0;
-  margin-bottom: 0.25rem;
-}
-
-.card-subtitle {
-  color: #94a3b8;
-  font-size: 0.875rem;
-}
-
-.span-2 {
-  grid-column: span 2;
+  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 1024px) {
-  .prediction-grid {
+  .secondary-charts {
     grid-template-columns: 1fr;
-  }
-
-  .span-2 {
-    grid-column: auto;
   }
 }
 
 @media (max-width: 768px) {
-  .predictive-billing {
+  .analytics-dashboard {
     padding: 1rem;
   }
 
-  .prediction-header {
+  .dashboard-header {
     flex-direction: column;
     gap: 1rem;
   }
 
-  .prediction-period {
+  .time-filter {
     width: 100%;
     justify-content: center;
   }
 
-  .insights-grid {
-    grid-template-columns: 1fr;
+  .chart-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .chart-actions {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -219,12 +252,4 @@
 
 .recharts-tooltip-item {
   color: #e2e8f0 !important;
-}
-
-.recharts-legend-item-text {
-  color: #94a3b8 !important;
-}
-
-.span-full {
-  grid-column: 1 / -1;
 } 

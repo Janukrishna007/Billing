@@ -1,0 +1,187 @@
+.voice-signature {
+  background-color: var(--card-bg);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.signature-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.signature-header h3 {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.signature-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.signature-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.record-button {
+  width: 100%;
+  max-width: 300px;
+}
+
+.record-button button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.start-record {
+  background-color: var(--primary);
+  color: white;
+}
+
+.stop-record {
+  background-color: var(--error);
+  color: white;
+}
+
+.recording-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-primary);
+}
+
+.wave-animation {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.wave-animation span {
+  width: 3px;
+  height: 20px;
+  background-color: var(--primary);
+  border-radius: 3px;
+  animation: wave 1s ease-in-out infinite;
+}
+
+.wave-animation span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.wave-animation span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.wave-animation span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+@keyframes wave {
+  0%, 100% {
+    height: 20px;
+  }
+  50% {
+    height: 40px;
+  }
+}
+
+.processing-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-primary);
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--text-secondary);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.signature-status {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  font-weight: 500;
+}
+
+.signature-status.verified {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.signature-status.failed {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.verification-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.verification-details p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .voice-signature {
+    padding: 1rem;
+  }
+}
+
+.transcript {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--background);
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
+
+.transcript h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.transcript p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.signature-status {
+  white-space: pre-line;
+} 

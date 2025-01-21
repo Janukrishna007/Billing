@@ -10,10 +10,15 @@ import Scanner from './components/Scanner';
 import PredictiveBilling from './components/PredictiveBilling';
 import IoTBilling from './components/IoTBilling';
 import InventoryManagement from './components/InventoryManagement';
+import PaymentSystem from './components/PaymentSystem';
+import VoiceSignature from './components/VoiceSignature';
+import FinancialHealth from './components/FinancialHealth';
+import { billsApi, inventoryApi, iotApi, rewardsApi, transactionsApi, analyticsApi } from './services/api';
 
 // Example customer data structure
 const customers = [
   {
+  
     id: 1,
     name: 'John Doe',
     email: 'john@example.com',
@@ -123,6 +128,12 @@ function App() {
   const [showPredictions, setShowPredictions] = useState(false);
   const [showIoT, setShowIoT] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [showVoiceSignature, setShowVoiceSignature] = useState(false);
+  const [showFinancialHealth, setShowFinancialHealth] = useState(false);
+  const [realtimeData, setRealtimeData] = useState([]);
+  const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   const translations = {
     en: {
@@ -158,12 +169,23 @@ function App() {
       phone: 'Phone',
       address: 'Address',
       itemNumber: 'Item Number',
-      showPredictions: 'Show Predictions',
-      hidePredictions: 'Hide Predictions',
+      showPredictions: 'Show Predicciones',
+      hidePredictions: 'Hide Predicciones',
       showIoT: 'Show IoT Devices',
       hideIoT: 'Hide IoT Devices',
       showInventory: 'Show Inventory',
       hideInventory: 'Hide Inventory',
+      payNow: 'Pay Now',
+      paymentDetails: 'Detalles del Pago',
+      amountToPay: 'Cantidad a Pagar',
+      card: 'Tarjeta',
+      upi: 'UPI',
+      netBanking: 'Banca en Línea',
+      financialHealth: 'Salud Financiera',
+      hideFinancialHealth: 'Ocultar Salud Financiera',
+      scanBill: 'Escanear Factura',
+      showCustomer: 'Show Customer',
+      hideCustomer: 'Hide Customer',
     },
     es: {
       title: 'Facturación',
@@ -204,6 +226,17 @@ function App() {
       hideIoT: 'Ocultar Dispositivos IoT',
       showInventory: 'Mostrar Inventario',
       hideInventory: 'Ocultar Inventario',
+      payNow: 'Pagar Ahora',
+      paymentDetails: 'Detalles del Pago',
+      amountToPay: 'Cantidad a Pagar',
+      card: 'Tarjeta',
+      upi: 'UPI',
+      netBanking: 'Banca en Línea',
+      financialHealth: 'Salud Financiera',
+      hideFinancialHealth: 'Ocultar Salud Financiera',
+      scanBill: 'Escanear Factura',
+      showCustomer: 'Mostrar Cliente',
+      hideCustomer: 'Ocultar Cliente',
     },
     hi: {
       title: 'बिलिंग',
@@ -242,8 +275,19 @@ function App() {
       hidePredictions: 'भविष्यवाणियां छिपाएं',
       showIoT: 'Show IoT Devices',
       hideIoT: 'Hide IoT Devices',
-      showInventory: 'Show Inventory',
-      hideInventory: 'Hide Inventory',
+      showInventory: 'इन्वेंटरी दिखाएं',
+      hideInventory: 'इन्वेंटरी छिपाएं',
+      payNow: 'अभी भुगतान करें',
+      paymentDetails: 'भुगतान विवरण',
+      amountToPay: 'भुगतान राशि',
+      card: 'कार्ड',
+      upi: 'UPI',
+      netBanking: 'नेट बैंकिंग',
+      financialHealth: 'वित्तीय स्वास्थ्य',
+      hideFinancialHealth: 'वित्तीय स्वास्थ्य छिपाएं',
+      scanBill: 'बिल स्कैन करें',
+      showCustomer: 'ग्राहक दिखाएं',
+      hideCustomer: 'ग्राहक छिपाएं',
     },
     ml: {
       title: 'ബില്ലിംഗ്',
@@ -282,8 +326,19 @@ function App() {
       hidePredictions: 'പ്രവചനങ്ങൾ മറയ്ക്കുക',
       showIoT: 'Show IoT Devices',
       hideIoT: 'Hide IoT Devices',
-      showInventory: 'Show Inventory',
-      hideInventory: 'Hide Inventory',
+      showInventory: 'ഇൻവെന്ററി കാണിക്കുക',
+      hideInventory: 'ഇൻവെന്ററി മറയ്ക്കുക',
+      payNow: 'ഇപ്പോൾ പണമടയ്ക്കുക',
+      paymentDetails: 'പണമടയ്ക്കൽ വിവരങ്ങൾ',
+      amountToPay: 'പണമടയ്ക്കാവുന്ന തുക',
+      card: 'കാർഡ്',
+      upi: 'UPI',
+      netBanking: 'നെറ്റ് ബാങ്കിംഗ്',
+      financialHealth: 'വിത്തീയ ആരോഗ്യം',
+      hideFinancialHealth: 'വിത്തീയ ആരോഗ്യം മറയ്ക്കുക',
+      scanBill: 'ബില്ല് സ്കാൻ ചെയ്യുക',
+      showCustomer: 'ഉപഭോക്താവിനെ കാണിക്കുക',
+      hideCustomer: 'ഉപഭോക്താവിനെ മറയ്ക്കുക',
     }
   };
 
@@ -533,18 +588,9 @@ function App() {
     return (
       <div className="print-only">
         <div className="print-header">
-          <div className="company-info">
-            <h1>MJ Labs</h1>
-            <p>Technopark phase 1</p>
-            <p>Trivandrum</p>
-            <p>Phone: 8590276004</p>
-            <p>Email: mjlabstvm@gmail.com</p>
-          </div>
-          <div className="invoice-details">
-            <h2>INVOICE</h2>
-            <p>Invoice #: INV-{new Date().getTime().toString().slice(-6)}</p>
-            <p>Date: {formatDate(new Date())}</p>
-          </div>
+          <h2>INVOICE</h2>
+          <p>Invoice #: INV-{new Date().getTime().toString().slice(-6)}</p>
+          <p>Date: {formatDate(new Date())}</p>
         </div>
 
         <div className="print-customer-info">
@@ -605,22 +651,11 @@ function App() {
               <span>₹{finalTotal.toFixed(2)}</span>
             </div>
           </div>
-
-          
         </div>
 
         <div className="print-footer">
           <div className="terms-conditions">
-            <h4>Terms & Conditions</h4>
-            <p>1. Payment is due within 30 days</p>
-            <p>2. Please include invoice number on your payment</p>
-            <p>3. Thank you for your business!</p>
-          </div>
-          <div className="signature-section">
-            <div className="signature-line">
-              <hr />
-              <p>Authorized Signature</p>
-            </div>
+            <p>Thank you for your business!</p>
           </div>
         </div>
       </div>
@@ -673,6 +708,151 @@ function App() {
     );
   };
 
+  useEffect(() => {
+    let intervalId;
+
+    if (isRealtimeEnabled) {
+      // Initial fetch
+      fetchRealtimeData();
+
+      // Set up interval for real-time updates
+      intervalId = setInterval(fetchRealtimeData, 5000); // Fetch every 5 seconds
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isRealtimeEnabled]);
+
+  const fetchRealtimeData = async () => {
+    try {
+      // Fetch from your API
+      const response = await transactionsApi.fetchAll();
+      
+      // Process and add new transactions to billing
+      response.forEach(transaction => {
+        const matchedItem = predefinedItems.find(item => 
+          item.id === transaction.itemId || 
+          item.category === transaction.category
+        );
+
+        if (matchedItem) {
+          const baseAmount = transaction.amount || matchedItem.price;
+          const quantity = transaction.quantity || 1;
+          const gstAmount = (baseAmount * matchedItem.gstRate) / 100;
+          const totalAmount = baseAmount + gstAmount;
+
+          const newItem = {
+            itemNumber: matchedItem.id,
+            name: matchedItem.name,
+            category: matchedItem.category,
+            quantity: quantity,
+            price: baseAmount,
+            gstRate: matchedItem.gstRate,
+            gstAmount: gstAmount,
+            total: totalAmount,
+            date: new Date().toISOString().split('T')[0],
+            isRealtime: true // Flag to identify real-time entries
+          };
+
+          setItems(prevItems => {
+            // Check if this transaction is already added
+            const isExisting = prevItems.some(item => 
+              item.itemNumber === newItem.itemNumber && 
+              item.date === newItem.date &&
+              item.isRealtime
+            );
+
+            if (!isExisting) {
+              return [...prevItems, newItem];
+            }
+            return prevItems;
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching real-time data:', error);
+    }
+  };
+
+  const generateRandomTransaction = () => {
+    const randomItem = predefinedItems[Math.floor(Math.random() * predefinedItems.length)];
+    const quantity = Math.floor(Math.random() * 5) + 1;
+    const baseAmount = randomItem.price;
+    const gstAmount = (baseAmount * randomItem.gstRate) / 100;
+    const totalAmount = (baseAmount * quantity) + (gstAmount * quantity);
+
+    return {
+      itemNumber: randomItem.id,
+      name: randomItem.name,
+      category: randomItem.category,
+      quantity: quantity,
+      price: baseAmount,
+      gstRate: randomItem.gstRate,
+      gstAmount: gstAmount,
+      total: totalAmount,
+      date: new Date().toISOString().split('T')[0],
+      isSimulated: true // Flag to identify simulated entries
+    };
+  };
+
+  useEffect(() => {
+    let intervalId;
+
+    if (isSimulating) {
+      // Generate initial transaction
+      const newTransaction = generateRandomTransaction();
+      setItems(prevItems => [...prevItems, newTransaction]);
+
+      // Set up interval for continuous transactions
+      intervalId = setInterval(() => {
+        const newTransaction = generateRandomTransaction();
+        setItems(prevItems => [...prevItems, newTransaction]);
+      }, 3000); // Generate new transaction every 3 seconds
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isSimulating]);
+
+  const renderTableRow = (item, index) => (
+    <tr key={index} className={item.isSimulated ? 'simulated-row' : ''}>
+      <td>{item.date}</td>
+      <td>{item.itemNumber}</td>
+      <td>{predefinedItems.find(pItem => pItem.id === item.itemNumber)?.name || item.itemNumber}</td>
+      <td>{item.category}</td>
+      <td>{item.quantity}</td>
+      <td>₹{item.price.toFixed(2)}</td>
+      <td>{item.gstRate}%</td>
+      <td>₹{((item.price * item.quantity * item.gstRate) / 100).toFixed(2)}</td>
+      <td>₹{item.total.toFixed(2)}</td>
+      <td>
+        <button className="btn-remove" onClick={() => removeItem(index)}>
+          <FaTrash />
+        </button>
+      </td>
+      <td>
+        {item.isSimulated && (
+          <span className="simulation-badge" title="Simulated transaction">
+            🔄 Simulated
+          </span>
+        )}
+      </td>
+    </tr>
+  );
+
+  const findItemByName = (itemName) => {
+    return predefinedItems.find(item => 
+      item.name.toLowerCase() === itemName.toLowerCase() ||
+      item.id.toLowerCase() === itemName.toLowerCase()
+    );
+  };
+
   return (
     <div>
       <div className="translation-bar">
@@ -692,7 +872,7 @@ function App() {
               className="btn-toggle-customer"
               onClick={() => setShowSummary(!showSummary)}
             >
-              {showSummary ? t('hideSummary') : t('summary')}
+              {showSummary ? t('hideCustomer') : t('showCustomer')}
             </button>
             <button 
               className="btn-toggle-analytics"
@@ -724,49 +904,107 @@ function App() {
             >
               {showInventory ? t('hideInventory') : t('showInventory')}
             </button>
+            <button 
+              className="btn-financial-health"
+              onClick={() => setShowFinancialHealth(!showFinancialHealth)}
+            >
+              {showFinancialHealth ? t('hideFinancialHealth') : t('financialHealth')}
+            </button>
+            <button 
+              className={`btn-realtime ${isRealtimeEnabled ? 'active' : ''}`}
+              onClick={() => setIsRealtimeEnabled(!isRealtimeEnabled)}
+            >
+              {isRealtimeEnabled ? '🔴 Stop Real-time' : 'Start Real-time'}
+            </button>
+            <button 
+              className={`btn-simulate ${isSimulating ? 'active' : ''}`}
+              onClick={() => setIsSimulating(!isSimulating)}
+            >
+              {isSimulating ? '⏹️ Stop Simulation' : '▶️ Start Simulation'}
+            </button>
           </div>
         </header>
 
         {showSummary && (
           <section className="summary-section">
-            <div className="customer-form">
-              <h3>Customer Information</h3>
-              <input
-                type="text"
-                placeholder={t('name')}
-                value={customerInfo.name}
-                onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-              />
-              <input
-                type="email"
-                placeholder={t('email')}
-                value={customerInfo.email}
-                onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-              />
-              <input
-                type="tel"
-                placeholder={t('phone')}
-                value={customerInfo.phone}
-                onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-              />
-              <textarea
-                placeholder={t('address')}
-                value={customerInfo.address}
-                onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
-              />
-            </div>
-            <div className="summary-stats">
-              <div className="stat-card">
-                <h4>Total Items</h4>
-                <p>{items.length}</p>
+            <div className="summary-container">
+              <div className="customer-info-section">
+                <div className="section-header">
+                  <h3>{t('customerInfo')}</h3>
+                  <div className="divider"></div>
+                </div>
+                <div className="customer-form">
+                  <div className="form-group">
+                    <label htmlFor="customer-name">{t('name')}</label>
+                    <input
+                      id="customer-name"
+                      type="text"
+                      placeholder={t('name')}
+                      value={customerInfo.name}
+                      onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="customer-email">{t('email')}</label>
+                    <input
+                      id="customer-email"
+                      type="email"
+                      placeholder={t('email')}
+                      value={customerInfo.email}
+                      onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="customer-phone">{t('phone')}</label>
+                    <input
+                      id="customer-phone"
+                      type="tel"
+                      placeholder={t('phone')}
+                      value={customerInfo.phone}
+                      onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="customer-address">{t('address')}</label>
+                    <textarea
+                      id="customer-address"
+                      placeholder={t('address')}
+                      value={customerInfo.address}
+                      onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
+                      rows="3"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="stat-card">
-                <h4>Total Amount</h4>
-                <p>₹{totalAmount.toFixed(2)}</p>
-              </div>
-              <div className="stat-card">
-                <h4>Categories</h4>
-                <p>{new Set(items.map(item => item.category)).size}</p>
+
+              <div className="summary-stats-section">
+                <div className="section-header">
+                  <h3>Billing Summary</h3>
+                  <div className="divider"></div>
+                </div>
+                <div className="summary-stats">
+                  <div className="stat-card">
+                    <div className="stat-icon">📦</div>
+                    <div className="stat-content">
+                      <h4>Total Items</h4>
+                      <p>{items.length}</p>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">💰</div>
+                    <div className="stat-content">
+                      <h4>Total Amount</h4>
+                      <p>₹{totalAmount.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">🏷️</div>
+                    <div className="stat-content">
+                      <h4>Categories</h4>
+                      <p>{new Set(items.map(item => item.category)).size}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -883,6 +1121,26 @@ function App() {
                   <button className="btn-print" onClick={handlePrint}>
                     <FaPrint /> {t('printInvoice')}
                   </button>
+                  {totalAmount > 0 && (
+                    <button 
+                      className="btn-pay"
+                      onClick={() => {
+                        if (items.length > 0) {
+                          setShowPayment(true);
+                        } else {
+                          alert('Please add items to the bill before proceeding to payment.');
+                        }
+                      }}
+                    >
+                      💳 {t('payNow')}
+                    </button>
+                  )}
+                  <button 
+                    className="btn-voice-sign"
+                    onClick={() => setShowVoiceSignature(true)}
+                  >
+                    🎤 Voice Sign
+                  </button>
                 </div>
               </div>
             </div>
@@ -901,11 +1159,12 @@ function App() {
                     <th>GST Amount</th>
                     <th onClick={() => handleSort('total')}>{t('total')}</th>
                     <th>{t('actions')}</th>
+                    <th>Source</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredItems.map((item, index) => (
-                    <tr key={index}>
+                    <tr key={index} className={item.isRealtime ? 'realtime-row' : ''}>
                       <td>{item.date}</td>
                       <td>{item.itemNumber}</td>
                       <td>{predefinedItems.find(pItem => pItem.id === item.itemNumber)?.name || item.itemNumber}</td>
@@ -920,6 +1179,13 @@ function App() {
                           <FaTrash />
                         </button>
                       </td>
+                      <td>
+                        {item.isRealtime && (
+                          <span className="realtime-badge" title="Real-time transaction">
+                            🔴 Live
+                          </span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -933,11 +1199,14 @@ function App() {
         <PrintLayout />
 
         {showScanner && (
-          <Scanner 
-            onClose={() => setShowScanner(false)}
-            onScan={handleScanComplete}
-            predefinedItems={predefinedItems}
-          />
+          <div className="scanner-modal">
+            <div className="scanner-modal-content">
+              <Scanner 
+                onScanComplete={handleScanComplete}
+                onClose={() => setShowScanner(false)}
+              />
+            </div>
+          </div>
         )}
 
         {showPredictions && <PredictiveBilling items={items} />}
@@ -946,21 +1215,85 @@ function App() {
           <IoTBilling 
             onNewTransaction={(transaction) => {
               if (transaction.type === 'transaction') {
-                // Find a random predefined item for the IoT transaction
-                const randomItem = predefinedItems[Math.floor(Math.random() * predefinedItems.length)];
-                
-                const newItem = {
-                  itemNumber: `IOT-${transaction.deviceId}`,
-                  quantity: transaction.itemCount,
-                  price: transaction.amount / transaction.itemCount,
-                  category: randomItem.category,
-                  gstRate: randomItem.gstRate,
-                  date: new Date().toISOString().split('T')[0],
-                  total: transaction.amount,
-                  gstAmount: (transaction.amount * randomItem.gstRate) / 100
+                // Map devices to specific predefined items with exact prices
+                const deviceItemMap = {
+                  POS: [
+                    { id: 'ITM001', name: 'Laptop', price: 75000 },
+                    { id: 'ITM002', name: 'Smartphone', price: 45000 },
+                    { id: 'ITM003', name: 'T-Shirt', price: 999 },
+                    { id: 'ITM004', name: 'Jeans', price: 2499 },
+                    { id: 'ITM005', name: 'Pizza', price: 5 }
+                  ],
+                  SMRT: [
+                    { id: 'ITM008', name: 'Watch', price: 5000 },
+                    { id: 'ITM009', name: 'Perfume', price: 1999 },
+                    { id: 'ITM010', name: 'Medicine', price: 500 },
+                    { id: 'ITM012', name: 'Furniture', price: 25000 },
+                    { id: 'ITM013', name: 'Toys', price: 999 }
+                  ],
+                  SCAN: [
+                    { id: 'ITM006', name: 'Burger', price: 299 },
+                    { id: 'ITM011', name: 'Books', price: 799 },
+                    { id: 'ITM014', name: 'Sports Equipment', price: 2999 },
+                    { id: 'ITM007', name: 'Printer', price: 15000 }
+                  ]
                 };
-                setItems(prev => [...prev, newItem]);
-                setTotalAmount(prevTotal => prevTotal + transaction.amount);
+
+                let deviceType = '';
+                if (transaction.deviceId.includes('POS')) deviceType = 'POS';
+                else if (transaction.deviceId.includes('SMRT')) deviceType = 'SMRT';
+                else if (transaction.deviceId.includes('SCAN')) deviceType = 'SCAN';
+
+                if (deviceType) {
+                  const itemPool = deviceItemMap[deviceType];
+                  const index = Math.floor(Date.now() / 3000) % itemPool.length;
+                  const itemToAdd = itemPool[index];
+                  
+                  // Find the exact predefined item
+                  const selectedItem = predefinedItems.find(item => item.id === itemToAdd.id);
+
+                  if (selectedItem) {
+                    const quantity = transaction.itemCount || Math.floor(Math.random() * 3) + 1;
+                    const basePrice = selectedItem.price; // Use exact predefined price
+                    const baseAmount = basePrice * quantity;
+                    const gstAmount = (baseAmount * selectedItem.gstRate) / 100;
+                    const totalAmount = baseAmount + gstAmount;
+
+                    const newItem = {
+                      itemNumber: selectedItem.id,
+                      name: selectedItem.name,
+                      category: selectedItem.category,
+                      quantity: quantity,
+                      price: basePrice,
+                      gstRate: selectedItem.gstRate,
+                      gstAmount: gstAmount,
+                      total: totalAmount,
+                      date: new Date().toISOString().split('T')[0],
+                      isIoT: true,
+                      deviceId: transaction.deviceId,
+                      source: `IoT Device: ${transaction.deviceId}`
+                    };
+
+                    // Update real-time data feed with exact matching data
+                    const realtimeEntry = {
+                      timestamp: new Date().toISOString(),
+                      deviceId: transaction.deviceId,
+                      type: 'transaction',
+                      itemId: selectedItem.id,
+                      itemName: selectedItem.name,
+                      category: selectedItem.category,
+                      quantity: quantity,
+                      price: basePrice,
+                      gstRate: selectedItem.gstRate,
+                      gstAmount: gstAmount,
+                      total: totalAmount
+                    };
+
+                    setRealtimeData(prev => [...prev, realtimeEntry].slice(-10));
+                    setItems(prev => [...prev, newItem]);
+                    setTotalAmount(prevTotal => prevTotal + totalAmount);
+                  }
+                }
               }
             }}
           />
@@ -971,6 +1304,122 @@ function App() {
             items={items}
             predefinedItems={predefinedItems}
           />
+        )}
+
+        {showPayment && (
+          <div className="payment-modal">
+            <div className="payment-modal-content">
+              <button 
+                className="close-modal"
+                onClick={() => setShowPayment(false)}
+              >
+                ×
+              </button>
+              <PaymentSystem 
+                amount={totalAmount}
+                onPaymentComplete={(paymentDetails) => {
+                  console.log('Payment completed:', paymentDetails);
+                  setItems([]);
+                  setTotalAmount(0);
+                  setShowPayment(false);
+                  alert('Payment successful! Thank you for your purchase.');
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {showVoiceSignature && (
+          <div className="voice-modal">
+            <div className="voice-modal-content">
+              <button 
+                className="close-modal"
+                onClick={() => setShowVoiceSignature(false)}
+              >
+                ×
+              </button>
+              <VoiceSignature 
+                onSignatureComplete={(signatureData) => {
+                  console.log('Voice signature completed:', signatureData);
+                  setShowVoiceSignature(false);
+                }}
+                predefinedItems={predefinedItems}
+                onAddItem={(voiceText) => {
+                  // Clean up the voice text
+                  const cleanText = voiceText.toLowerCase().trim();
+                  
+                  // Try to find the item by name
+                  const foundItem = findItemByName(cleanText);
+                  
+                  if (foundItem) {
+                    // Check if this item was recently added (within last 2 seconds)
+                    const now = Date.now();
+                    const lastAddedTime = foundItem.lastAddedTime || 0;
+                    
+                    if (now - lastAddedTime < 2000) {
+                      // Skip if item was added less than 2 seconds ago
+                      return;
+                    }
+                    
+                    // Update last added time
+                    foundItem.lastAddedTime = now;
+
+                    // Calculate GST and total
+                    const quantity = 1; // Default quantity
+                    const baseAmount = foundItem.price * quantity;
+                    const gstAmount = (baseAmount * foundItem.gstRate) / 100;
+                    const totalAmount = baseAmount + gstAmount;
+
+                    const newItem = {
+                      itemNumber: foundItem.id,
+                      category: foundItem.category,
+                      quantity: quantity,
+                      price: foundItem.price,
+                      gstRate: foundItem.gstRate,
+                      gstAmount: gstAmount,
+                      total: totalAmount,
+                      date: new Date().toISOString().split('T')[0]
+                    };
+
+                    // Add the item to the list
+                    setItems(prevItems => [...prevItems, newItem]);
+                    // Update total amount
+                    setTotalAmount(prevTotal => prevTotal + totalAmount);
+                    
+                    // Provide feedback
+                    const utterance = new SpeechSynthesisUtterance(
+                      `Added ${foundItem.name} to the bill`
+                    );
+                    window.speechSynthesis.speak(utterance);
+                  } else {
+                    // Provide feedback if item not found
+                    const utterance = new SpeechSynthesisUtterance(
+                      `Sorry, I couldn't find ${cleanText} in the items list`
+                    );
+                    window.speechSynthesis.speak(utterance);
+                  }
+                }}
+                availableCommands={predefinedItems.map(item => item.name)}
+              />
+            </div>
+          </div>
+        )}
+
+        {showFinancialHealth && (
+          <div className="modal">
+            <div className="modal-content">
+              <button 
+                className="close-modal"
+                onClick={() => setShowFinancialHealth(false)}
+              >
+                ×
+              </button>
+              <FinancialHealth 
+                bills={items}
+                transactions={[/* your transactions data */]}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>

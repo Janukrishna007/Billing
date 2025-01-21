@@ -1,0 +1,66 @@
+:root {
+  --watermark-paid: rgba(16, 185, 129, 0.1);
+  --watermark-pending: rgba(245, 158, 11, 0.1);
+  --watermark-overdue: rgba(239, 68, 68, 0.1);
+  --watermark-default: rgba(99, 102, 241, 0.1);
+}
+
+.digital-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.watermark-content {
+  background-color: var(--watermark-color);
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  min-width: 300px;
+  transform: scale(2);
+}
+
+.watermark-pattern {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--watermark-color);
+  filter: contrast(800%);
+  margin-bottom: 0.5rem;
+}
+
+.watermark-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--watermark-color);
+  filter: contrast(800%);
+}
+
+.watermark-status {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.watermark-number {
+  font-size: 0.875rem;
+}
+
+.watermark-timestamp {
+  font-size: 0.75rem;
+}
+
+@media print {
+  .digital-watermark {
+    display: flex !important;
+  }
+} 

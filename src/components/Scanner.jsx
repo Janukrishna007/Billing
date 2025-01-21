@@ -3,7 +3,7 @@ import { FaTimes, FaCamera, FaQrcode, FaBarcode } from 'react-icons/fa';
 import { Html5Qrcode } from 'html5-qrcode';
 import './Scanner.css';
 
-const Scanner = ({ onClose, onScan, predefinedItems }) => {
+const Scanner = ({ onScanComplete, onClose }) => {
   const [error, setError] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanner, setScanner] = useState(null);
@@ -11,8 +11,11 @@ const Scanner = ({ onClose, onScan, predefinedItems }) => {
 
   const checkCameraPermission = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      stream.getTracks().forEach(track => track.stop()); // Stop the stream immediately
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cameras = devices.filter(device => device.kind === 'videoinput');
+      if (cameras.length === 0) {
+        throw new Error('No cameras found');
+      }
       setHasPermission(true);
       return true;
     } catch (err) {
@@ -25,120 +28,64 @@ const Scanner = ({ onClose, onScan, predefinedItems }) => {
 
   const stopScanner = async () => {
     try {
-      if (scanner && scanner.isScanning) {
+      if (scanner) {
         await scanner.stop();
-        const videoElement = document.querySelector('#qr-reader video');
-        if (videoElement && videoElement.srcObject) {
-          const tracks = videoElement.srcObject.getTracks();
-          tracks.forEach(track => track.stop());
-          videoElement.srcObject = null;
-        }
+        setScanner(null);
       }
       setIsScanning(false);
-      onClose();
+      if (onClose) onClose();
     } catch (err) {
       console.error("Error stopping scanner:", err);
     }
   };
 
   useEffect(() => {
-    const handleEscKey = (event) => {
-      if (event.key === 'Escape') {
-        stopScanner();
-      }
-    };
-
-    window.addEventListener('keydown', handleEscKey);
-    return () => window.removeEventListener('keydown', handleEscKey);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
     const initializeScanner = async () => {
-      const hasAccess = await checkCameraPermission();
-      if (!hasAccess) return;
-
       try {
-        const newScanner = new Html5Qrcode("qr-reader");
-        if (mounted) {
-          setScanner(newScanner);
-          setIsScanning(true);
+        const hasAccess = await checkCameraPermission();
+        if (!hasAccess) return;
 
-          const config = {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0,
-            formatsToSupport: [
-              Html5Qrcode.FORMATS.QR_CODE,
-              Html5Qrcode.FORMATS.EAN_13,
-              Html5Qrcode.FORMATS.CODE_128,
-              Html5Qrcode.FORMATS.CODE_39,
-              Html5Qrcode.FORMATS.UPC_A,
-              Html5Qrcode.FORMATS.UPC_E,
-              Html5Qrcode.FORMATS.EAN_8,
-            ]
-          };
+        const html5QrcodeScanner = new Html5Qrcode("qr-reader");
+        setScanner(html5QrcodeScanner);
 
-          await newScanner.start(
-            { facingMode: "environment" },
-            config,
-            async (decodedText) => {
-              try {
-                const scannedItemId = decodedText.trim();
-                const foundItem = predefinedItems.find(item => item.id === scannedItemId);
-                
-                if (foundItem) {
-                  const newItem = {
-                    itemNumber: foundItem.id,
-                    quantity: 1,
-                    price: foundItem.price,
-                    category: foundItem.category,
-                    gstRate: foundItem.gstRate,
-                    date: new Date().toISOString().split('T')[0],
-                    total: foundItem.price
-                  };
-                  
-                  onScan(newItem);
-                  await stopScanner();
-                } else {
-                  setError("Item not found. Please scan a valid product code.");
-                  setTimeout(() => setError(null), 3000);
-                }
-              } catch (err) {
-                setError("Invalid code format. Please try again.");
-                setTimeout(() => setError(null), 3000);
-              }
-            },
-            (errorMessage) => {
-              if (!errorMessage.includes("No QR code found")) {
-                console.log(errorMessage);
-              }
+        const config = {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0,
+        };
+
+        await html5QrcodeScanner.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText) => {
+            console.log("Scanned code:", decodedText);
+            const cleanedText = decodedText.trim().replace(/[^0-9a-zA-Z]/g, '');
+            onScanComplete({
+              itemNumber: cleanedText
+            });
+          },
+          (errorMessage) => {
+            if (!errorMessage.includes("No QR code found")) {
+              console.error("Scanning error:", errorMessage);
             }
-          );
-        }
+          }
+        );
+
+        setIsScanning(true);
       } catch (err) {
-        if (mounted) {
-          setError("Failed to start scanner. Please try again.");
-          console.error("Scanner initialization error:", err);
-        }
+        setError("Failed to initialize scanner. Please try again.");
+        console.error("Scanner initialization error:", err);
       }
     };
 
     initializeScanner();
 
     return () => {
-      mounted = false;
-      if (scanner?.isScanning) {
+      if (scanner) {
         scanner.stop().catch(console.error);
-        const videoElement = document.querySelector('#qr-reader video');
-        if (videoElement?.srcObject) {
-          videoElement.srcObject.getTracks().forEach(track => track.stop());
-          videoElement.srcObject = null;
-        }
       }
     };
-  }, [onClose, onScan, predefinedItems]);
+  }, []);
 
   const renderContent = () => {
     if (hasPermission === false) {
@@ -201,9 +148,9 @@ const Scanner = ({ onClose, onScan, predefinedItems }) => {
   };
 
   return (
-    <div className="scanner-overlay" onClick={(e) => e.target === e.currentTarget && stopScanner()}>
+    <div className="scanner-overlay">
       <div className="scanner-container">
-        <button className="close-button" onClick={stopScanner} aria-label="Close scanner">
+        <button className="close-scanner" onClick={stopScanner}>
           <FaTimes />
         </button>
         <div className="scanner-content">
