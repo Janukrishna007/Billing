@@ -104,10 +104,7 @@ function App() {
     LUXURY: 28
   };
 
-  const [items, setItems] = useState(() => {
-    const savedItems = localStorage.getItem('billingItems');
-    return savedItems ? JSON.parse(savedItems) : [];
-  });
+  const [items, setItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('');
