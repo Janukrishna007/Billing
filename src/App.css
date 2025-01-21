@@ -695,6 +695,7 @@ th {
   gap: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease;
+  border: 1px solid var(--border);
 }
 
 .stat-card:hover {
@@ -705,11 +706,12 @@ th {
   font-size: 24px;
   width: 48px;
   height: 48px;
-  background: #ebf8ff;
+  background: var(--secondary);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-primary);
 }
 
 .stat-content {
@@ -717,17 +719,39 @@ th {
 }
 
 .stat-content h4 {
-  color: #4a5568;
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
   margin-bottom: 4px;
 }
 
 .stat-content p {
-  color: #2d3748;
+  color: var(--text-primary);
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
+}
+
+/* Dark theme specific overrides */
+[data-theme='dark'] .stat-card {
+  background-color: var(--card-bg);
+  border-color: var(--border);
+}
+
+[data-theme='dark'] .stat-content h4,
+[data-theme='dark'] .stat-content p {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .stat-icon {
+  background-color: var(--secondary);
+  color: var(--text-primary);
+}
+
+/* Summary stats section background */
+[data-theme='dark'] .summary-stats-section {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
 }
 
 /* Responsive Design */
@@ -2159,5 +2183,81 @@ button.btn-add:hover {
   100% {
     transform: scale(1);
   }
+}
+
+/* Add these styles to ensure text visibility in dark theme */
+.form-label {
+  color: var(--text-color, #333);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-input {
+  background-color: var(--input-bg, #fff);
+  color: var(--input-text, #333);
+  border: 1px solid var(--border-color, #ddd);
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.form-input::placeholder {
+  color: var(--placeholder-color, #666);
+}
+
+.section-title {
+  color: var(--heading-color, #333);
+  margin-bottom: 1rem;
+}
+
+.stat-title {
+  color: var(--stat-title-color, #333);
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  color: var(--stat-value-color, #333);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Dark theme specific colors */
+[data-theme='dark'] .form-label {
+  color: #e1e1e1;
+}
+
+[data-theme='dark'] .form-input {
+  background-color: #2a2a2a;
+  color: #e1e1e1;
+  border-color: #444;
+}
+
+[data-theme='dark'] .form-input::placeholder {
+  color: #888;
+}
+
+[data-theme='dark'] .section-title {
+  color: #e1e1e1;
+}
+
+[data-theme='dark'] .stat-title {
+  color: #e1e1e1;
+}
+
+[data-theme='dark'] .stat-value {
+  color: #e1e1e1;
+}
+
+/* Additional styles for better visibility */
+[data-theme='dark'] .customer-info-section,
+[data-theme='dark'] .summary-stats-section {
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+}
+
+[data-theme='dark'] .stat-card {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
 }
 

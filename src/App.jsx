@@ -730,32 +730,32 @@ function App() {
       
       // Process and add new transactions to billing
       response.forEach(transaction => {
-        const matchedItem = predefinedItems.find(item => 
-          item.id === transaction.itemId || 
-          item.category === transaction.category
-        );
+        // Only look for exact matches in predefinedItems
+        const matchedItem = predefinedItems.find(item => item.id === transaction.itemId);
 
         if (matchedItem) {
-          const baseAmount = transaction.amount || matchedItem.price;
           const quantity = transaction.quantity || 1;
-          const gstAmount = (baseAmount * matchedItem.gstRate) / 100;
-          const totalAmount = baseAmount + gstAmount;
+          const baseAmount = matchedItem.price; // Use exact predefined price
+          const baseTotal = baseAmount * quantity;
+          const gstAmount = (baseTotal * matchedItem.gstRate) / 100;
+          const totalAmount = baseTotal + gstAmount;
 
           const newItem = {
             itemNumber: matchedItem.id,
             name: matchedItem.name,
             category: matchedItem.category,
             quantity: quantity,
-            price: baseAmount,
+            price: matchedItem.price, // Use exact predefined price
             gstRate: matchedItem.gstRate,
             gstAmount: gstAmount,
             total: totalAmount,
             date: new Date().toISOString().split('T')[0],
-            isRealtime: true // Flag to identify real-time entries
+            isRealtime: true,
+            source: `IoT Device (${transaction.deviceId})`
           };
 
           setItems(prevItems => {
-            // Check if this transaction is already added
+            // Check if this exact transaction is already added
             const isExisting = prevItems.some(item => 
               item.itemNumber === newItem.itemNumber && 
               item.date === newItem.date &&
@@ -768,6 +768,7 @@ function App() {
             return prevItems;
           });
         }
+        // If no exact match found in predefinedItems, ignore the transaction
       });
     } catch (error) {
       console.error('Error fetching real-time data:', error);
@@ -791,7 +792,8 @@ function App() {
       gstAmount: gstAmount,
       total: totalAmount,
       date: new Date().toISOString().split('T')[0],
-      isSimulated: true // Flag to identify simulated entries
+      isSimulated: true, // Flag to identify simulated entries
+      source: `IoT Device (${Math.floor(Math.random() * 1000) + 1})`
     };
   };
 
@@ -834,9 +836,13 @@ function App() {
         </button>
       </td>
       <td>
-        {item.isSimulated && (
-          <span className="simulation-badge" title="Simulated transaction">
-            🔄 Simulated
+        {item.source ? (
+          <span className="source-badge">
+            {item.source}
+          </span>
+        ) : (
+          <span className="source-badge">
+            Manual Entry
           </span>
         )}
       </td>
@@ -927,44 +933,48 @@ function App() {
             <div className="summary-container">
               <div className="customer-info-section">
                 <div className="section-header">
-                  <h3>{t('customerInfo')}</h3>
+                  <h3 className="section-title">{t('customerInfo')}</h3>
                   <div className="divider"></div>
                 </div>
                 <div className="customer-form">
                   <div className="form-group">
-                    <label htmlFor="customer-name">{t('name')}</label>
+                    <label htmlFor="customer-name" className="form-label">{t('name')}</label>
                     <input
                       id="customer-name"
                       type="text"
+                      className="form-input"
                       placeholder={t('name')}
                       value={customerInfo.name}
                       onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="customer-email">{t('email')}</label>
+                    <label htmlFor="customer-email" className="form-label">{t('email')}</label>
                     <input
                       id="customer-email"
                       type="email"
+                      className="form-input"
                       placeholder={t('email')}
                       value={customerInfo.email}
                       onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="customer-phone">{t('phone')}</label>
+                    <label htmlFor="customer-phone" className="form-label">{t('phone')}</label>
                     <input
                       id="customer-phone"
                       type="tel"
+                      className="form-input"
                       placeholder={t('phone')}
                       value={customerInfo.phone}
                       onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="customer-address">{t('address')}</label>
+                    <label htmlFor="customer-address" className="form-label">{t('address')}</label>
                     <textarea
                       id="customer-address"
+                      className="form-input"
                       placeholder={t('address')}
                       value={customerInfo.address}
                       onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
@@ -976,29 +986,29 @@ function App() {
 
               <div className="summary-stats-section">
                 <div className="section-header">
-                  <h3>Billing Summary</h3>
+                  <h3 className="section-title">Billing Summary</h3>
                   <div className="divider"></div>
                 </div>
                 <div className="summary-stats">
                   <div className="stat-card">
                     <div className="stat-icon">📦</div>
                     <div className="stat-content">
-                      <h4>Total Items</h4>
-                      <p>{items.length}</p>
+                      <h4 className="stat-title">Total Items</h4>
+                      <p className="stat-value">{items.length}</p>
                     </div>
                   </div>
                   <div className="stat-card">
                     <div className="stat-icon">💰</div>
                     <div className="stat-content">
-                      <h4>Total Amount</h4>
-                      <p>₹{totalAmount.toFixed(2)}</p>
+                      <h4 className="stat-title">Total Amount</h4>
+                      <p className="stat-value">₹{totalAmount.toFixed(2)}</p>
                     </div>
                   </div>
                   <div className="stat-card">
                     <div className="stat-icon">🏷️</div>
                     <div className="stat-content">
-                      <h4>Categories</h4>
-                      <p>{new Set(items.map(item => item.category)).size}</p>
+                      <h4 className="stat-title">Categories</h4>
+                      <p className="stat-value">{new Set(items.map(item => item.category)).size}</p>
                     </div>
                   </div>
                 </div>
@@ -1177,9 +1187,13 @@ function App() {
                         </button>
                       </td>
                       <td>
-                        {item.isRealtime && (
-                          <span className="realtime-badge" title="Real-time transaction">
-                            🔴 Live
+                        {item.source ? (
+                          <span className="source-badge">
+                            {item.source}
+                          </span>
+                        ) : (
+                          <span className="source-badge">
+                            Manual Entry
                           </span>
                         )}
                       </td>
@@ -1212,84 +1226,55 @@ function App() {
           <IoTBilling 
             onNewTransaction={(transaction) => {
               if (transaction.type === 'transaction') {
-                // Map devices to specific predefined items with exact prices
-                const deviceItemMap = {
-                  POS: [
-                    { id: 'ITM001', name: 'Laptop', price: 75000 },
-                    { id: 'ITM002', name: 'Smartphone', price: 45000 },
-                    { id: 'ITM003', name: 'T-Shirt', price: 999 },
-                    { id: 'ITM004', name: 'Jeans', price: 2499 },
-                    { id: 'ITM005', name: 'Pizza', price: 5 }
-                  ],
-                  SMRT: [
-                    { id: 'ITM008', name: 'Watch', price: 5000 },
-                    { id: 'ITM009', name: 'Perfume', price: 1999 },
-                    { id: 'ITM010', name: 'Medicine', price: 500 },
-                    { id: 'ITM012', name: 'Furniture', price: 25000 },
-                    { id: 'ITM013', name: 'Toys', price: 999 }
-                  ],
-                  SCAN: [
-                    { id: 'ITM006', name: 'Burger', price: 299 },
-                    { id: 'ITM011', name: 'Books', price: 799 },
-                    { id: 'ITM014', name: 'Sports Equipment', price: 2999 },
-                    { id: 'ITM007', name: 'Printer', price: 15000 }
-                  ]
-                };
+                // Get all available predefined items
+                const availableItems = predefinedItems.map(item => item.id);
+                
+                // Get current timestamp to use as index
+                const now = Date.now();
+                // Cycle through items based on time
+                const index = Math.floor(now / 3000) % availableItems.length; // Change item every 3 seconds
+                const selectedItemId = availableItems[index];
+                
+                const selectedItem = predefinedItems.find(item => item.id === selectedItemId);
 
-                let deviceType = '';
-                if (transaction.deviceId.includes('POS')) deviceType = 'POS';
-                else if (transaction.deviceId.includes('SMRT')) deviceType = 'SMRT';
-                else if (transaction.deviceId.includes('SCAN')) deviceType = 'SCAN';
+                if (selectedItem) {
+                  const quantity = Math.floor(Math.random() * 3) + 1;
+                  const basePrice = selectedItem.price;
+                  const baseAmount = basePrice * quantity;
+                  const gstAmount = (baseAmount * selectedItem.gstRate) / 100;
+                  const totalAmount = baseAmount + gstAmount;
 
-                if (deviceType) {
-                  const itemPool = deviceItemMap[deviceType];
-                  const index = Math.floor(Date.now() / 3000) % itemPool.length;
-                  const itemToAdd = itemPool[index];
-                  
-                  // Find the exact predefined item
-                  const selectedItem = predefinedItems.find(item => item.id === itemToAdd.id);
+                  const newItem = {
+                    itemNumber: selectedItem.id,
+                    name: selectedItem.name,
+                    category: selectedItem.category,
+                    quantity: quantity,
+                    price: basePrice,
+                    gstRate: selectedItem.gstRate,
+                    gstAmount: gstAmount,
+                    total: totalAmount,
+                    date: new Date().toISOString().split('T')[0],
+                    isIoT: true,
+                    deviceId: transaction.deviceId,
+                    source: `IoT Device (${transaction.deviceId})`
+                  };
 
-                  if (selectedItem) {
-                    const quantity = transaction.itemCount || Math.floor(Math.random() * 3) + 1;
-                    const basePrice = selectedItem.price; // Use exact predefined price
-                    const baseAmount = basePrice * quantity;
-                    const gstAmount = (baseAmount * selectedItem.gstRate) / 100;
-                    const totalAmount = baseAmount + gstAmount;
+                  // Add to billed items
+                  setItems(prev => [...prev, newItem]);
+                  setTotalAmount(prevTotal => prevTotal + totalAmount);
 
-                    const newItem = {
-                      itemNumber: selectedItem.id,
-                      name: selectedItem.name,
-                      category: selectedItem.category,
-                      quantity: quantity,
-                      price: basePrice,
-                      gstRate: selectedItem.gstRate,
-                      gstAmount: gstAmount,
-                      total: totalAmount,
-                      date: new Date().toISOString().split('T')[0],
-                      isIoT: true,
-                      deviceId: transaction.deviceId,
-                      source: `IoT Device: ${transaction.deviceId}`
-                    };
-
-                    // Update real-time data feed with exact matching data
-                    const realtimeEntry = {
-                      timestamp: new Date().toISOString(),
-                      deviceId: transaction.deviceId,
-                      type: 'transaction',
-                      itemId: selectedItem.id,
-                      itemName: selectedItem.name,
-                      category: selectedItem.category,
-                      quantity: quantity,
-                      price: basePrice,
-                      gstRate: selectedItem.gstRate,
-                      gstAmount: gstAmount,
-                      total: totalAmount
-                    };
-
-                    setRealtimeData(prev => [...prev, realtimeEntry].slice(-10));
-                    setItems(prev => [...prev, newItem]);
-                    setTotalAmount(prevTotal => prevTotal + totalAmount);
-                  }
+                  // Update real-time data feed
+                  const realtimeEntry = {
+                    timestamp: new Date().toISOString(),
+                    deviceId: transaction.deviceId,
+                    itemId: selectedItem.id,
+                    itemName: selectedItem.name,
+                    quantity: quantity,
+                    price: basePrice,
+                    total: totalAmount,
+                    source: `IoT Device (${transaction.deviceId})`
+                  };
+                  setRealtimeData(prev => [...prev, realtimeEntry].slice(-10));
                 }
               }
             }}
@@ -1375,7 +1360,8 @@ function App() {
                       gstRate: foundItem.gstRate,
                       gstAmount: gstAmount,
                       total: totalAmount,
-                      date: new Date().toISOString().split('T')[0]
+                      date: new Date().toISOString().split('T')[0],
+                      source: `IoT Device (${Math.floor(Math.random() * 1000) + 1})`
                     };
 
                     // Add the item to the list
