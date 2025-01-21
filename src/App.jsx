@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import './App.css';
 import { FaTrash, FaPrint, FaSearch, FaFileExport, FaSave, FaEdit, FaCamera } from 'react-icons/fa';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
+import LoadingScreen from './components/LoadingScreen';
 
 import EnvironmentalImpact from './components/EnvironmentalImpact'
 import TranslationSelector from './components/TranslationSelector';
@@ -131,6 +132,7 @@ function App() {
   const [realtimeData, setRealtimeData] = useState([]);
   const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const translations = {
     en: {
@@ -166,8 +168,8 @@ function App() {
       phone: 'Phone',
       address: 'Address',
       itemNumber: 'Item Number',
-      showPredictions: 'Show Predicciones',
-      hidePredictions: 'Hide Predicciones',
+      showPredictions: 'Show Predictions',
+      hidePredictions: 'Hide Predictions',
       showIoT: 'Show IoT Devices',
       hideIoT: 'Hide IoT Devices',
       showInventory: 'Show Inventory',
@@ -855,6 +857,19 @@ function App() {
       item.id.toLowerCase() === itemName.toLowerCase()
     );
   };
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Show loading screen for 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div>
